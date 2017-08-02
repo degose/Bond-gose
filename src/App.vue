@@ -2,12 +2,6 @@
   #app
      
     feed
-    //- router-view(name="home")   
-
-    //- 직접 에셋 속성을 설정하는 경우, assets/ 디렉토리에서 찾아야 이미지 출력
-    //- file-loader를 통해 아래와 같이 처리되기 때문
-    //- /dist/logo.png?82b9c7a5a3f405032b1db71a25f67021
-    //- img(src="./assets/logo.png", :alt="vue.label")
 </template>
 
 <script>
