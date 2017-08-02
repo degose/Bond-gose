@@ -1,6 +1,6 @@
 <template lang="pug">
   #app
-    
+     
     feed
     //- router-view(name="home")   
 
