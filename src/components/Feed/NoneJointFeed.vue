@@ -144,8 +144,7 @@ export default {
 
 <style lang="sass">
 
-.feed-box
-  margin-bottom: 30px
+
 
 
 </style>

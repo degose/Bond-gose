@@ -2,20 +2,20 @@
 
   
   //- none-joint-feed
-  joined-feed
+  joined-group-feed
 
 
 </template>
 
 <script>
 // import NoneJointFeed from './NoneJointFeed';
-import JoinedFeed from './JoinedFeed';
+import JoinedGroupFeed from './JoinedGroupFeed';
 
 export default {
   name: 'app',
   components: {
     // NoneJointFeed,
-    JoinedFeed
+    JoinedGroupFeed
   }, 
 }
 </script>
