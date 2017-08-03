@@ -32,6 +32,7 @@ export default {
 
 <style lang="sass">
 @import "~bulma"
+@import "~style"
 
 body
   // background: #ffc107

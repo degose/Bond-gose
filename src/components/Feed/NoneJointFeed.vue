@@ -13,6 +13,7 @@
             .media
               .media-content
                 p.title.is-4 그룹 이름
+              icon
                 span 멤버 5
             .content
               | Lorem ipsum dolor sit amet, consectetur adipiscing elit.

@@ -46,7 +46,7 @@ module.exports = {
       // .vue 파일 <style lang="sass"> 내에 @import "~yamoo9" 를 호출하면 사용 가능합니다.
       // 'bulma': path.resolve(__dirname, './src/bulma/bulma.sass')
       'bulma': path.resolve(__dirname, './src/bulma/config.sass'),
-      'style': path.resolve(__dirname, './src/style/style.scss')
+      'style': path.resolve(__dirname, './src/style/style.sass')
     }
   },
   devServer: {
