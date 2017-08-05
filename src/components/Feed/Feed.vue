@@ -1,7 +1,8 @@
 <template lang="pug">
   .wrapper
     header-main
-    joined-group-feed
+    my-group-feed
+    //- joined-group-feed
     //- none-joint-feed
     
 
@@ -11,6 +12,7 @@
 <script>
 import NoneJointFeed from './NoneJointFeed';
 import JoinedGroupFeed from './JoinedGroupFeed';
+import MyGroupFeed from './/MyGroupFeed.vue';
 import HeaderMain from './Header';
 import WriteModal from './WriteModal';
 
@@ -19,6 +21,7 @@ export default {
   components: {
     NoneJointFeed,
     JoinedGroupFeed,
+    MyGroupFeed,
     HeaderMain,
     WriteModal
   },
