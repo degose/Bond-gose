@@ -1,40 +1,53 @@
 <template lang="pug">
   #app
-     
-    feed
+    div
+      router-view
+      app-nav
+      //- main-header
+      //- feed
+      //- group-list
+
+      main-footer
 </template>
 
 <script>
-import Vue from 'Vue';
-import Home from './components/Home/Home';
-// import HeaderUser from './components/HeaderUser';
-import Feed from './components/Feed/Feed';
+import Navigation from './components/Navigation';
+import MainHeader from './components/MainHeader';
+import Feed from './components/Feed';
+import GroupList from './components/GroupList';
+import MainFooter from './components/MainFooter';
 
 export default {
   name: 'app',
   components: {
-    // HeaderMain,
-    Home,
-    Feed
+    appNav: Navigation,
+    MainHeader,
+    Feed,
+    GroupList,
+    MainFooter,
   },
   data () {
     return {
-      vue: {
-        // 동적 속성 바인딩 시에는 src/ 디렉토리에서 찾아야 이미지 출력
-        // file-loader를 사용하지 않고, 직접 속성 값을 설정하기 때문
-        path: './src/assets/logo.png',
-        label: 'Vue.js'
       }
     }
   }
-}
 </script>
 
 <style lang="sass">
 @import "~bulma"
 @import "~style"
 
-body
-  // background: #ffc107
+html,body
+  // font-size: 100%
+  // margin: 0
+  // padding: 0
+  min-height: 100vh
+#app 
+    // position: relative
+    // min-height: 100%
+.title
+    // margin-top: 20px
+
+
 
 </style>
