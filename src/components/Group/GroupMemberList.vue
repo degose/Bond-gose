@@ -1,6 +1,6 @@
 <template lang="pug">
   //- 가입한 그룹의 feed
-  div.container
+  .container.page-wrapper
     .columns
       //- 그룹 정보 영역
       .column.is-3
@@ -24,6 +24,7 @@
               | Phasellus nec iaculis mauris. 
 
 
+
       .column.is-9
 
         .feed-box
@@ -37,8 +38,8 @@
                 //- | &nbsp; 
                 //- | &nbsp; 
                 //- | &nbsp; 
-                button.btn-default.column.is-offset-7.is-hidden-mobile + 멤버 초대
-                button.btn-default.is-hidden-desktop.is-hidden-tablet + 멤버 초대
+                button.btn-default.column.is-offset-7.is-hidden-mobile(@click="openModal") + 멤버 초대
+                button.btn-default.column.is-offset-4.is-hidden-desktop.is-hidden-tablet(@click="openModal") + 멤버 초대
               
             .card-content
               table.table.is-fullwidth
@@ -105,23 +106,41 @@
                     
                     td
                       span.tag.is-rounded.is-primary 리더
-
-                  
-
-
+          invitation-modal(
+            ref="my_modal"
+            close_message="close lightbox"
+          )
 </template>
 
 <script>
+import InvitationModal from '../Group/InvitationModal'
+
 export default {
+  components:{
+    InvitationModal
+  },
   data() {
     return{
 
     }
+  },  
+  methods: {
+    openModal(){
+      this.$refs.my_modal.visible = true;
+    },
   }
 }
 </script>
 
 <style lang="sass" scoped>
+@import "~bulma"
+@import "~style"
+
+.page-wrapper
+  min-height: 87vh
+
+.user-img
+  border-radius: 50%
 .namelist,
   padding-top: 13px
 .tag.is-rounded

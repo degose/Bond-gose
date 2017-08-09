@@ -1,60 +1,59 @@
-// //Load Components
-// import Home from './components/Home';
-// import Login from './components/Login';
-// import SignUp from './components/SignUp';
-// import Password from './components/Password';
-// import SearchPage from './components/SearchPage';
-// import RemoveGroup from './components/RemoveGroup';
-
-// //Route Setting
-// export const routes = [
-//   {path: '/', component: Home},
-//   {path: '/Login', component: Login},
-//   {path: '/SignUp', component: SignUp},
-//   {path: '/Password', component: Password},
-//   {path: '/SearchPage', component: SearchPage},
-//   {path: '/RemoveGroup', component: RemoveGroup}
-// ]
-
-//Load Components
 
 // Feed
-import JoinedGroupFeed from './components/JoinedGroupFeed';
-import MemberList from './components/MemberList';
-import MyGroupFeed from './components/MyGroupFeed';
-import NoneJointFeed from './components/NoneJointFeed';
-import RemoveGroup from './components/RemoveGroup';
+import Feed from './components/Feed/Feed';
+import MyWriteFeed from './components/Feed/MyWriteFeed';
+import MyGroupFeed from './components/Feed/MyGroupFeed';
+import NoneJointGroupFeed from './components/Feed/NoneJointGroupFeed';
+
+// Group
+import JointGroup from './components/Group/JointGroup';
+import GroupMemberList from './components/Group/GroupMemberList';
+import JointGroupFeed from './components/Group/JointGroupFeed';
 
 // Home
-import Home from './components/Home';
-import Login from './components/Login';
-import SignUp from './components/SignUp';
-import Password from './components/Password';
+import Home from './components/Home/Home';
+import SignInPage from './components/Home/SignInPage';
+import SignUpPage from './components/Home/SignUpPage';
+import FindPassword from './components/Home/FindPassword';
 
 // Main
-import GroupList from './components/GroupList';
-import SearchPage from './components/SearchPage';
+import MainPage from './components/Main/MainPage';
+import MyGroup from './components/Main/MyGroup';
+import SearchResult from './components/Main/SearchResult';
 
 // Set
 
 //Route Setting
 export const routes = [
     //Feed
-    {path: '/JoinedGroupFeed', component: JoinedGroupFeed},
-    {path: '/MemberList', component: MemberList},
+    {path: '/Feed', component: Feed},
+    {path: '/MyWriteFeed', component: MyWriteFeed},
     {path: '/MyGroupFeed', component: MyGroupFeed},
-    {path: '/NoneJointFeed', component: NoneJointFeed},
-    {path: '/RemoveGroup', component: RemoveGroup},
+    {path: '/NoneJointGroupFeed', component: NoneJointGroupFeed},
+
+    // Group
+    // {path: '/JointGroup', component: JointGroup},
+    {path: '/JointGroup', component: JointGroup, children: [
+      {path: '', component: JointGroupFeed},
+      {path: '/JointGroup/GroupMemberList', component: GroupMemberList},
+    ]},
+    // {path: '/JointGroupFeed', component: JointGroupFeed},
+    // {path: '/GroupMemberList', component: GroupMemberList},
 
     //Home
-    {path: '/Home', component: Home},
-    {path: '/Login', component: Login},
-    {path: '/Password', component: Password},
-    {path: '/SignUp', component: SignUp},
+    {path: '/', component: Home},
+    {path: '/SignInPage', component: SignInPage},
+    {path: '/FindPassword', component: FindPassword},
+    {path: '/SignUpPage', component: SignUpPage},
 
     //Main
-    {path: '/GroupList', component: GroupList},
-    {path: '/SearchPage', component: SearchPage},
+    {path: '/MainPage', component: MainPage},
+    {path: '/MyGroup', component: MyGroup},
+    {path: '/SearchResult', component: SearchResult},
+    // {path: '/InvitationModal', component: InvitationModal},
     
     //Set
+
+    // *
+    {path: '*', component: Home}
 ]
