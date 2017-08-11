@@ -15,7 +15,7 @@
                 div
                   span 멤버 5
                   |  · 
-                  a 
+                  a(aria-label="open leave group modal" @click="openLeaveGroupModal") 
                     span.icon.is-small
                       i.fa.fa-cog(aria-hidden='true')
                     | 그룹 설정
@@ -110,14 +110,17 @@
             ref="my_modal"
             close_message="close lightbox"
           )
+          leave-group-modal(close_message="close lightbox" ref='leave_group_modal')
 </template>
 
 <script>
-import InvitationModal from '../Group/InvitationModal'
+import InvitationModal from './InvitationModal'
+import LeaveGroupModal from './LeaveGroupModal'
 
 export default {
   components:{
-    InvitationModal
+    InvitationModal,
+    LeaveGroupModal
   },
   data() {
     return{
@@ -128,6 +131,9 @@ export default {
     openModal(){
       this.$refs.my_modal.visible = true;
     },
+    openLeaveGroupModal(){
+      this.$refs.leave_group_modal.visible = true;
+    },
   }
 }
 </script>
@@ -135,6 +141,9 @@ export default {
 <style lang="sass" scoped>
 @import "~bulma"
 @import "~style"
+
+body
+  background: #eee
 
 .page-wrapper
   min-height: 87vh

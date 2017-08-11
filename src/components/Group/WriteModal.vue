@@ -11,17 +11,17 @@
           textarea.write-text-modal(placeholder='소식을 남겨주세요.', rows='10' v-model="write.task")
         //- footer.card-footer
       footer.card-footer
-        .file.card-footer-item
+        a.file.card-footer-item
           label.file-label
             input.file-input(type='file', name='resume')
             span
               i.fa.fa-picture-o
-        .file.card-footer-item
+        a.file.card-footer-item
           label.file-label
             input.file-input(type='file', name='resume')
             span
               i.fa.fa-play-circle-o
-        .file.card-footer-item
+        a.file.card-footer-item
           label.file-label
             input.file-input(type='file', name='resume')
             span
@@ -68,7 +68,7 @@ export default {
       //   console.error(error.message);
       //   console.log('실패');
       // })
-      this.$http.post('https://bond-43bc3.firebaseio.com/write.json', this.write)
+      this.$http.post(this.$store.state.api_write, this.write)
                 .then(response => console.log(response))
                 .catch(error => console.log(error.message));
     }
@@ -91,6 +91,11 @@ export default {
 
 .file-cta
   // background: #fff
+// label,
+// input
+// span,
+// i
+//   cursur: pointer
 
   
 </style>
