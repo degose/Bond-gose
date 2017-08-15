@@ -44,14 +44,14 @@ export const routes = [
     {
       path: '/', 
       component: Home,
-      // beforeEnter(to, from, next){
-      //   let tk = window.localStorage.getItem('token');
-      //   if (tk) {
-      //     next('/MainPage');
-      //   } else {
-      //     next();
-      //   }
-      // },
+      beforeEnter(to, from, next){
+        let tk = window.localStorage.getItem('token');
+        if (tk) {
+          next('/MainPage');
+        } else {
+          next();
+        }
+      },
     },
     {path: '/FindPassword', component: FindPassword},
     {
@@ -66,8 +66,7 @@ export const routes = [
     {path: '/SearchResult', component: SearchResult},
     // {path: '/InvitationModal', component: InvitationModal},
     
-    //Set
-
+    // Set
     // *
     {path: '*', component: Home}
 ]
