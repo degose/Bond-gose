@@ -1,7 +1,7 @@
 <template lang="pug">  
-  div
+  div.all-wrapper
     main-header
-    .container
+    .container.page-wrapper
       .columns
         .column.is-10.is-offset-1
           .box.fetched-data
@@ -51,7 +51,6 @@
 import MainHeader from '../Header-Footer/MainHeader';
 import MainFooter from '../Header-Footer/MainFooter';
 
-// const bus = new Vue();
 
 export default {
   name: 'app',
@@ -86,7 +85,7 @@ export default {
       // bus.$on('call-child', (payload)=>{
       //   this.payload = payload;
       //   })
-      let search = this.search.trim();
+      // let search = this.search.trim();
       // window.localStorage.setItem('searchKeyword',search)
       let searchkeyword = window.localStorage.getItem('searchKeyword');
       this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/'+'group/?search='+`${searchkeyword}`)
@@ -102,7 +101,7 @@ export default {
                   // this.$router.push('/SearchResult')
                   console.log('response:',response);
                   console.log('search:',search);
-                  this.$router.push({ path: '/SearchResult/group/', query: { search: `${search}` }});
+                  this.$router.push({ path: '/SearchResult/group/', query: { search: `${searchkeyword}` }});
                   console.log('search:',search);
                 })
                 .catch(error => console.error(error.message))
@@ -124,8 +123,13 @@ export default {
 //   background: #fff
 // body
 //   margin: 0
-body
+
+.all-wrapper
   background: #eee
+body
+  // background: #eee
+.page-wrapper
+  min-height: 120vh
 .navbar-burger.burger
   padding-top: 8px
   padding-left: 10px

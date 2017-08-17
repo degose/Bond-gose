@@ -108,7 +108,7 @@ export default {
                   console.log('response:',response);
                   console.log('results:',this.group_list);
                   console.log('search:',search);
-                  this.$router.push({ path: '/SearchResult/group/', query: { search: `${search}` }});
+                  this.$router.push({ path: '/SearchResult/group/', query: { search: `${searchkeyword}` }});
                 })
                 .catch(error => console.error(error.message))
     },
@@ -125,7 +125,7 @@ export default {
 @import "~style"
 
 body
-  background: #eee
+  // background: #eee
 
 .navbar-burger.burger
   padding-top: 8px

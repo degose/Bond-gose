@@ -1,5 +1,5 @@
 <template lang="pug">
-  div
+  div.all-wrapper
     main-header
     //- router-link
     my-group
@@ -26,8 +26,9 @@ export default {
 @import "~bulma"
 @import "~style"
 
-body
-  // background: #eee
+// body
+.all-wrapper
+  background: #eee
 
 </style>
 
