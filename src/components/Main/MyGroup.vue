@@ -2,11 +2,11 @@
   div
     .page-wrapper
       .container.grouplist
-        p Mygroup: {{ count }}
         .columns.grouplist-wrapper
           //- 그룹 정보 영역
-          .column.is-3(v-for="data in datalist")
-            router-link(to="/JointGroup")
+          .column.is-3(v-for="group in group_list")
+            //- router-link(to="/JointGroup")
+            a(@click.prevent="goGroup(group.pk, $event)")
               .card
                 .card-image
                   figure.image.is-desktop-16by9.is-mobile-1by1.is-tablet-2by1.img-grouplist-wrapper
@@ -14,8 +14,7 @@
                 .card-content
                   .media
                     .media-content.has-text-centered
-                      p.title.is-4 {{ data.name }}
-                      //- p.title.is-4 그룹 이름
+                      p.title.is-4 {{ group.name }}
 
               
           .column.is-3
@@ -72,13 +71,9 @@ export default {
   data () {
     return {
       uploadGroupImg: '',
-      count: '',
-      datalist: [],
-      group: {
-        // name: '',
-        // description: '',
-        // proflie_img: null
-      }
+      group_list: [],
+      group_pk: '',
+      group: {}
     };
   },
   methods: {
@@ -92,17 +87,34 @@ export default {
       this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/my-group/', 
         {headers: { 'Authorization' : `Token ${user_token}` }}
       )
-      .then(group => {
-        const datalist = Object.values(group);
-        this.datalist = datalist;
-       console.log(group);
+      .then(response => {
+        // const datalist = Object.values(response);
+        // this.datalist = datalist;
+        this.group_list = response.data.results;
+       console.log(response);
+      //  console.log('pk:', response.data.results[2].pk);
+      //  for(i){
+      //    g
+      //  }
+      //  this.group_pk = response.data.results[i].pk;
+      //  console.log(this.group_pk);
+      //  this.group_list.index.reverse();
       })
       .catch(error => {
         console.log(error.message);
       })
+    },
+    goGroup(pk, e){
+      // this.$router.push({ path: 'JointGroup', query: { plan: 'private' }});
+      // http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/my-group/?group=1
+      // let group_pk = 'http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/' + `${pk}`;
+      // this.$router.push('/JointGroup/?group=${}');
+      // this.$router.push({path: '/JointGroup', params: {id: pk}});
+      this.$router.push({ path: '/JointGroup/', query: { group: `${pk}` }});
+      // this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/')
+      console.log(pk);
     }
-  }
-}
+}}
 </script>
 
 <style lang="sass" scoped>
@@ -130,8 +142,9 @@ export default {
 .img-grouplist-wrapper
   width: auto
   height: auto
+  min-height: 100px
+  max-height: 135px
   overflow: hidden
-  background: url('http://bulma.io/images/placeholders/640x320.png')
 .grouplist-wrapper
   flex-wrap: wrap
 
