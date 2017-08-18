@@ -8,7 +8,7 @@
                 img.is-hidden-desktop.is-hidden-tablet(src='../../assets/logo-02.svg', alt='작은본드')
             .navbar-burger.burger(data-target="navMenuburger" @click="openMobileMyMenu")
               figure
-                img.image.is-30x30.user-img(src='http://bulma.io/images/placeholders/96x96.png', alt='Image', width=30, height=30)
+                img.image.is-35x35.user-img(:src='user.profile_img', alt='Image', width=35, height=35)
           .search.column
             .field.has-addons
               .control.has-icons-left.is-expanded
@@ -16,7 +16,7 @@
                 input.input(
                   id="search" 
                   type='text' 
-                  placeholder='그룹이나 게시글을 검색해보세요' 
+                  placeholder='그룹이나 게시글을 검색해보세요'  
                   @input="inputSearch" 
                   :value="search"
                   )
@@ -24,13 +24,12 @@
                   i.fa.fa-search
               .control
                 button.button.btn-search(type="button" @click.prevent="fetch") Search
-
           #navMenuburger.navbar-menu
             .navbar-end
               .navbar-item.has-dropdown.is-hoverable.is-right
                 a.navbar-link
                   figure
-                    img.image.is-30x30.user-img(src='http://bulma.io/images/placeholders/96x96.png', alt='Image')
+                    img.image.is-35x35.user-img(:src='user.profile_img', alt='Image')
                 .navbar-dropdown
                   a.navbar-item(@click="openMySetting")
                     | 내 정보
@@ -54,25 +53,38 @@ export default {
     MySetting,
     MobileMyMenu,
   },
-  // created(){
-  //   // this.group_list = Object.keys(this.group_list[0]); 
-  //   this.fetch();
-  // },
   data(){
     return{
       search: '',
       group_list:[],
+      user: {}
     }
   },
+  created(){
+    this.getUserImg();
+  },
   methods: {
+    getUserImg(){
+      let user_token = window.localStorage.getItem('token');
+      let pk = window.localStorage.getItem('pk');
+      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/member/' + `${pk}` + '/',
+      { headers: {'Authorization' : `Token ${user_token}`}})
+                .then(response => {
+                  this.user = response.data;
+                  })
+                .catch(error => console.log(error.response));
+    },
     signOut(){
       this.$http.post('http://bond.ap-northeast-2.elasticbeanstalk.com/api/member/logout/')
-      //  { headers: {'Authorization' : `Token ${user_token}`}})
       .then(response => {
         let token = response.data.token;
+        let pk = response.data.user;
         if ( window.localStorage.getItem('token') ) {
           window.localStorage.removeItem('token', token);
+          window.localStorage.removeItem('pk', pk)
         }
+        // this.$store.commit('bg_off')
+        // this.$store.commit('bg_on')
         this.$router.push( {path: "/"} );
         alert("성공적으로 로그아웃 하셨습니다.")
         // console.log(response);
@@ -95,27 +107,22 @@ export default {
         this.group_list = group_list.filter(search => Object.values(search));
       }
     },
+    inputSearch(event){
+    this.search = event.target.value;
+    },
     fetch(){
       let search = this.search.trim();
       window.localStorage.setItem('searchKeyword',search)
-      let searchkeyword = window.localStorage.getItem('searchKeyword');
-      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/'+'group/?search='+`${searchkeyword}`)
-                .then(response => {
-                  this.group_list = response.data.results;
-                  // console.log(this.group_list)
-                  // this.$router.push('/SearchResult')
-                  
-                  console.log('response:',response);
-                  console.log('results:',this.group_list);
-                  console.log('search:',search);
-                  this.$router.push({ path: '/SearchResult/group/', query: { search: `${searchkeyword}` }});
-                })
-                .catch(error => console.error(error.message))
+      this.$router.push({ path: '/SearchResult/group/', query: { search: `${search}` }});
+      // let searchkeyword = window.localStorage.getItem('searchKeyword');
+      // this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/'+'group/?search='+`${search}`)
+      //           .then(response => {
+      //             this.group_list = response.data.results;
+      //             console.log('results:',this.group_list);
+      //             this.$router.push({ path: '/SearchResult/group/', query: { search: `${search}` }});
+      //           })
+      //           .catch(error => console.error(error.message))
     },
-    inputSearch(event){
-      this.search = event.target.value;
-    }
-    
   }
 }
 </script>
@@ -123,10 +130,10 @@ export default {
 <style lang="sass">
 @import "~bulma"
 @import "~style"
-
+.user-img
+  background: #eee
 body
   // background: #eee
-
 .navbar-burger.burger
   padding-top: 8px
   padding-left: 10px
@@ -135,7 +142,6 @@ body
   // margin: 0
 .dropdownhr
   margin: 5px
-
 .nav-fixed
   position: fixed
 .nav-bg

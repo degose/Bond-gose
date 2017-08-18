@@ -6,7 +6,7 @@
           .column.is-3
             .card
               .card-image
-                figure.image.is-16by9
+                figure.image.group_profile-wrapper.is-desktop-16by9.is-mobile-1by1.is-tablet-2by1
                   img.group_profile_img(:src='group_data.profile_img', alt='Image')
               .card-content
                 article.media
@@ -51,30 +51,35 @@
                         | &nbsp; 
                         |글쓰기
                 
+            div.feed-box(v-show="post_data.length <= 0")
+              .card
+                .card-content
+                  .content
+                    | 그룹에 재미있는 이야기를 써보세요.
 
-
-            div.feed-box
+            div.feed-box(@add-post-data="addPostData" v-for="(post, i) in post_data")
               .card
                 .card-content
                   article.media
                     .media-left
                       figure.image.is-64x64.img-user
-                        img.user-img(src='http://bulma.io/images/placeholders/96x96.png', alt='Image')
+                        img.user-img(:src='post.author.profile_img', alt='Image')
                     .media-content
                       //- p.title.is-4.user-name(v-for='data in datalist') 작성자
                       //- p.subtitle.is-6(v-for='data in datalist') 작성시간
-                      p.title.is-4.user-name 작성자
-                      p.subtitle.is-6 작성시간
+                      p.title.is-4.user-name {{ post.author.nickname }}
+                      p.subtitle.is-6 {{ post.created_date }}
 
 
                     //- 드롭다운 버튼
                     .dropdown.is-right.is-active
                       .dropdown-trigger
-                        button(aria-haspopup='true', aria-controls='dropdown-menu3' @click="openDropdownPost")
+                        button(aria-haspopup='true', aria-controls='dropdown-menu3' @click="openDropdownPost(post.pk, $event)")
                           span.icon
                             i.icon-more.ion-android-more-vertical(aria-hidden='true')
 
-                      #dropdown-menu3.dropdown-menu(role='menu' v-show="dropdownpost")
+                      //- #dropdown-menu3.dropdown-menu(role='menu' :class="post.pk")
+                      #dropdown-menu3.dropdown-menu(role='menu' v-show="dropdownpost" :class='post.pk')
                         .dropdown-content
                           ul
                             li
@@ -86,18 +91,19 @@
 
                   //- 글 (최상위)
                   .content
-                    .get-http 
-                      button(type='button', @click='fetchData') fetch
-                    .del-http 
-                      button(type='button', @click='delData') delete
-                      p.fetched-data
-                        p.fetched-data-item(v-for='data in post_data') {{ write.data }}
+                    | {{ post.content }}
+                    //- .get-http 
+                    //-   button(type='button', @click='fetchData') fetch
+                    //- .del-http 
+                    //-   button(type='button', @click='delData') delete
+                    //-   p.fetched-data
+                    //-     p.fetched-data-item(v-for='data in post_data') {{ write.data }}
 
                     
                   //- 이미지 - 1개일 때
-                  .content(v-if=' -1 > 0')
+                  .content(v-if="post.image")
                     figure.image
-                      img(src='http://bulma.io/images/placeholders/480x320.png')
+                      img(:src='post.image')
 
 
                   //- 동영상
@@ -127,15 +133,15 @@
                 
                 //- 좋아요, 댓글 개수
                 footer.card-footer
-                  button(type="submit" @click="addLike").card-footer-item.btn-show-like
+                  button(type="submit" @click="addLike(post.pk)").card-footer-item.btn-show-like
                     span.icon-like
                       i.fa.fa-heart-o(v-show="!like")
                       i.fa.fa-heart(v-show="like")
                     | &nbsp;  
-                    | 5
+                    | {{ post.like_count }}
                   button(@click="showComment").card-footer-item.btn-show-comment
                     | 댓글
-                    | 5
+                    | {{ post.comment_count }}
                     | &nbsp; 
                     span.icon.is-small(v-show="!showcomment")
                       i.fa.fa-angle-down(aria-hidden='true')
@@ -159,24 +165,24 @@
                               i.fa.fa-pencil
                   
                   //- 댓글 리스트 영역
-                  article.media(v-show="showcomment")
+                  article.media(v-show="showcomment" v-for="comment in comment_data")
                     figure.media-left
                       p.image.is-48x48
-                        img.user-img(src='http://bulma.io/images/placeholders/128x128.png')
+                        img.user-img(:src='comment.author.profile_img')
                     .media-content
                       .content
                         p
-                          strong Barbara Middleton
+                          strong {{ comment.author.nickname }}
                           br
-                          |         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta eros lacus, nec ultricies elit blandit non. Suspendisse pellentesque mauris sit amet dolor blandit rutrum. Nunc in tempus turpis.
+                          | {{ comment.content }}
                           br
                           small
-                            | 3 hrs
+                            | {{ comment.created_date }}
                     
                     //- 드롭다운 버튼
                     .dropdown.is-right.is-active
                       .dropdown-trigger
-                        button.btn-feed-dropdown(aria-haspopup='true', aria-controls='dropdown-menu3' @click="openDropdownComment")
+                        button.btn-feed-dropdown(aria-haspopup='true', aria-controls='dropdown-menu3' @click="openDropdownComment(comment.pk)")
                           span.icon.is-small
                             i.icon-more.ion-android-more-vertical(aria-hidden='true')
                       #dropdown-menu3.dropdown-menu(role='menu' v-show="dropdowncomment")
@@ -201,13 +207,13 @@ import LeaveGroupModal from './LeaveGroupModal';
 import PostTemplate from './PostTemplate';
 
 export default {
-  name: 'JointGroupFeed',
   created(){
-    this.fetchGroupData();
+    // this.fetchGroupData();
   },
   mounted(){
-    // this.fetchGroupData();
-    this.fetchData();
+    this.fetchGroupData();
+    this.fetchPostData();
+    this.fetchCommentData();
   },
   // beforeUpdate(){
   //   // this.fetchData()
@@ -222,6 +228,7 @@ export default {
       dropdowncomment: false,
       showcomment: false,
       like: false,
+      like_or_not: '',
       write: {
         // 텍스트 내용
         content:'',
@@ -229,8 +236,10 @@ export default {
         group: 29
       },
       group_data:[],
-      post_data:[]
+      post_data:[],
+      comment_data:[],
       // target: ''
+      pk:'',
     }
   },
   components: {
@@ -239,6 +248,11 @@ export default {
     PostTemplate
   },
   methods: {
+    addPostData(o){
+      console.log(this.post_data);
+      this.post_data.unshift(o);
+      console.log(this.post_data);
+    },
     openWriteModal(){
       this.$refs.write_modal.visible = true;
     },
@@ -254,17 +268,29 @@ export default {
         console.error(error.message);
       });
     },
-    openDropdownPost() {
+    openDropdownPost(pk, e, i) {
+      console.log('postpk',pk);
+      console.log('e.target',e.target);
+      console.log('index',i);
       this.dropdownpost = !this.dropdownpost;
     },
-    openDropdownComment() {
+    openDropdownComment(pk) {
       this.dropdowncomment = !this.dropdowncomment;
     },
-    showComment() {
+    showComment(pk) {
       this.showcomment = !this.showcomment;
     },
-    addLike() {
-      
+    addLike(pk) {
+      let user_token = window.localStorage.getItem('token');
+      this.$http.post('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/' + `${pk}`+ '/post-like-toggle', this.like_or_not,
+       { headers: {'Authorization' : `Token ${user_token}`}})
+                .then(response=> {
+                  // this.like_or_not = response.like_or_not;
+                  // console.log('this.group_datalist:',this.group_data);
+                  // this.like_or_not = response.data;
+                  console.log('like.response:',response);
+                })
+                .catch(error => console.log(error.response));
       this.like = !this.like;
     },
     fetchGroupData(){
@@ -284,14 +310,18 @@ export default {
                 // .then(data => console.log(data))
                 .catch(error => console.log(error.response));
     },
-    fetchData(){
+    fetchPostData(){
       let user_token = window.localStorage.getItem('token');
       let pk = window.localStorage.getItem('this_group');
-      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/?group=' + `${pk}` + '/',
+      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/?group=' + `${pk}`,
        { headers: {'Authorization' : `Token ${user_token}`} })
                 .then(response=> {
-                  this.post_data = response.data.results;
-                  console.log('this.post_data:',this.post_data);
+                  // this.post_data = response.data.results;
+                  let data = response.data.results;
+                  data.forEach(item => {
+                    this.post_data.push(item);
+                  });
+                  // console.log('this.post_data:',this.post_data);
                 })
                 // .then(write => {const datalist = Object.values(write);
                 // this.datalist = datalist;
@@ -300,13 +330,29 @@ export default {
                 // .then(data => console.log(data))
                 .catch(error => console.log(error.response));
     },
-
+    fetchCommentData(ppk){
+      let user_token = window.localStorage.getItem('token');
+      let pk = window.localStorage.getItem('this_group');
+      // let ppk = this.post.pk;
+      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group=' + `${pk}` + '/post=' + `${ppk}`,
+       { headers: {'Authorization' : `Token ${user_token}`} })
+                .then(response=> {
+                  this.comment_data = response.data.results;
+                  console.log('this.comment_data:',this.comment_data);
+                })
+                // .then(write => {const datalist = Object.values(write);
+                // this.datalist = datalist;
+                // })
+                // 
+                // .then(data => console.log(data))
+                .catch(error => console.log(error.response));
+    },
     delData(){
       this.$http.delete(this.$store.state.api_write, this.write)
       .then(response => console.log(response)
       //  { return response.json()}
        ).catch(error => console.log(error.message));
-    }
+    },
   }
 }
 </script>
@@ -315,11 +361,18 @@ export default {
 <style lang="sass" scoped>
 @import "~bulma"
 @import "~style"
+.group_profile-wrapper
+  width: auto
+  height: auto
+  min-height: 100px
+  max-height: 135px
+  overflow: hidden
 
 .group_profile_img
   background: url('http://bulma.io/images/placeholders/1280x960.png')
   // overflow: hidden
-
+.user-img
+  background: #eee
 
 body
   background: #eee
