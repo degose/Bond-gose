@@ -1,7 +1,6 @@
 <template lang="pug">
   div.all-wrapper
     main-header
-    //- router-link
     my-group
     main-footer
 </template>
@@ -11,13 +10,20 @@ import MainHeader from '../Header-Footer/MainHeader';
 import MainFooter from '../Header-Footer/MainFooter';
 import MyGroup from '../Main//MyGroup';
 export default {
-  name: 'app',
+  name: 'MainPage',
   components: {
     MainHeader,
     MyGroup,
     MainFooter,
-    
   },
+  methods:{
+
+  },
+  // watch: {
+  //   $route(newVal, oldVal) {
+  //     newVal.query.search !== oldVal.query.search && this.fetched();
+  //   },
+  // },
   
 }
 </script>
