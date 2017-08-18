@@ -57,7 +57,7 @@
                   .content
                     | 그룹에 재미있는 이야기를 써보세요.
 
-            div.feed-box(v-for="(post, i) in post_data")
+            div.feed-box(@add-post-data="addPostData" v-for="(post, i) in post_data")
               .card
                 .card-content
                   article.media
@@ -248,6 +248,11 @@ export default {
     PostTemplate
   },
   methods: {
+    addPostData(o){
+      console.log(this.post_data);
+      this.post_data.unshift(o);
+      console.log(this.post_data);
+    },
     openWriteModal(){
       this.$refs.write_modal.visible = true;
     },
@@ -311,8 +316,12 @@ export default {
       this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/?group=' + `${pk}`,
        { headers: {'Authorization' : `Token ${user_token}`} })
                 .then(response=> {
-                  this.post_data = response.data.results;
-                  console.log('this.post_data:',this.post_data);
+                  // this.post_data = response.data.results;
+                  let data = response.data.results;
+                  data.forEach(item => {
+                    this.post_data.push(item);
+                  });
+                  // console.log('this.post_data:',this.post_data);
                 })
                 // .then(write => {const datalist = Object.values(write);
                 // this.datalist = datalist;

@@ -127,12 +127,30 @@ export default {
         }
       )
                 .then(response => {
-                  console.log(response);
                   let data = response.data;
-                  let content = data.content;
+                  this.$parent.post_data.unshift({
+                    author: {},
+                    comment_count: 0,
+                    is_like: false,
+                    pk: data.pk,
+                    image: data.image,
+                    group: data.group,
+                    video: data.video,
+                    content: data.content
+                  });
+                  // this.$emit('add-post-data', {
+                  //   author: {},
+                  //   comment_count: 0,
+                  //   is_like: false,
+                  //   pk: data.pk,
+                  //   image: data.image,
+                  //   group: data.group,
+                  //   video: data.video,
+                  //   content: data.content
+                  // });
                 })
                 .catch(error => console.log(error.response));
-      this.visible = false;
+                this.visible = false;
     },
     // 한글 양방향 데이터 바인딩 메서드
     writePost(target, e){
