@@ -35,7 +35,6 @@ div.all-wrapper
 
 <script>
 export default {
-  name: 'app',
   data(){
     return{
       group_list: [],

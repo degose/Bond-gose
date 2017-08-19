@@ -139,6 +139,7 @@ export default {
         // console.log(profile_img);
         this.visible = false;
         // getMyGroupList();
+        console.log('부모', this.$parent);
       })
       .catch(error => {
         if(this.group.name === ''){

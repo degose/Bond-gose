@@ -48,7 +48,6 @@
 <script>
 // import {bus} from './bus'
 export default {
-  name: 'app',
   props: {
     close_message: {
       type: String,
@@ -111,27 +110,41 @@ export default {
       let user_token = window.localStorage.getItem('token');
       let pk = window.localStorage.getItem('this_group');
       let formData = new FormData();
+      let user_pk = window.localStorage.getItem('pk');
+      let user_img = window.localStorage.getItem('user_img');
+      let user_nickname = window.localStorage.getItem('user_nickname');
 
       formData.append('content', this.write.content);
       // formData.append('image', this.$refs.file_img_input.files[0]);
       formData.append('group', pk);
       
-      // let write = {
-      //   content: this.write.content,
-      //   image: '',
-      //   group: pk
-      // }
       this.$http.post(this.$store.state.api_write, formData,
         { 
           headers: {
             'Authorization' : `Token ${user_token}`,
             'Content-Type': 'multipart/form-data'
           }
-        }
-      )
+        })
                 .then(response => {
                   let data = response.data;
-                  // this.$parent.post_data.unshift({
+                  console.log('data::',data);
+                  this.$parent.post_data.unshift({
+                    author: {
+                      // email: author.email,
+                      nickname: user_nickname,
+                      // pk: author.pk,
+                      profile_img: user_img,
+                      // username: author.nickname
+                    },
+                    comment_count: 0,
+                    is_like: false,
+                    pk: data.pk,
+                    image: data.image,
+                    group: data.group,
+                    video: data.video,
+                    content: data.content
+                  });
+                  // this.$emit('add-post-data', {
                   //   author: {},
                   //   comment_count: 0,
                   //   is_like: false,
@@ -141,16 +154,6 @@ export default {
                   //   video: data.video,
                   //   content: data.content
                   // });
-                  bus.$emit('add-post-data', {
-                    author: {},
-                    comment_count: 0,
-                    is_like: false,
-                    pk: data.pk,
-                    image: data.image,
-                    group: data.group,
-                    video: data.video,
-                    content: data.content
-                  });
                 })
                 .catch(error => console.log(error.response));
                 this.visible = false;

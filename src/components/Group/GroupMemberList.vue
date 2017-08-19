@@ -1,27 +1,28 @@
 <template lang="pug">
-  //- 가입한 그룹의 feed
-  .container.page-wrapper
+  div.container.page-wrapper
     .columns
       //- 그룹 정보 영역
       .column.is-3
         .card
           .card-image
-            figure.image.is-16by9
-              img(src='http://bulma.io/images/placeholders/1280x960.png', alt='Image')
+            figure.image.group_profile-wrapper.is-desktop-16by9.is-mobile-1by1.is-tablet-2by1
+              img.group_profile_img(:src='group_data.profile_img', alt='Image')
           .card-content
             article.media
               .media-content
-                p.title.is-4 그룹 이름
+                p.title.is-4 {{ group_data.name }}
                 div
-                  span 멤버 5
+                  span 멤버 {{ group_data.num_of_members }}
                   |  · 
-                  a(aria-label="open leave group modal" @click="openLeaveGroupModal") 
+                  a(aria-label="open leave group modal" @click.prevent="deletegroup") 
                     span.icon.is-small
                       i.fa.fa-cog(aria-hidden='true')
-                    | 그룹 설정
-            .content
-              | Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              | Phasellus nec iaculis mauris. 
+                    | 그룹 삭제
+                  a(aria-label="open leave group modal" @click.prevent="deletemembership") 
+                    span.icon.is-small
+                      i.fa.fa-cog(aria-hidden='true')
+                    | 그룹 탈퇴
+            .content {{ group_data.description }}
 
 
 
@@ -125,8 +126,17 @@ export default {
     InvitationModal,
     LeaveGroupModal
   },
+  created(){
+    this.fetchGroupData();
+    // this.fetchPostData();
+    // this.fetchCommentData();
+    // bus.$on('add-post-data')
+    // this.deletePost();
+  },
   data() {
     return{
+      visible: false,
+      group_data:[],
 
     }
   },  
@@ -136,6 +146,18 @@ export default {
     },
     openLeaveGroupModal(){
       this.$refs.leave_group_modal.visible = true;
+    },
+    fetchGroupData(){
+      let user_token = window.localStorage.getItem('token');
+      let pk = window.localStorage.getItem('this_group');
+      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/' + `${pk}`+ '/',
+       { headers: {'Authorization' : `Token ${user_token}`}})
+                .then(response=> {
+                  this.group_data = response.data;
+                  // console.log('this.group_datalist:',this.group_data);
+                  // console.log('response:',response);
+                })
+                .catch(error => console.log(error.response));
     },
   }
 }

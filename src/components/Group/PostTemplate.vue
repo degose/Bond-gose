@@ -261,6 +261,27 @@ export default {
                 // .then(data => console.log(data))
                 .catch(error => console.log(error.response));
     },
+    writeCommentSubmit(pk){
+      let user_token = window.localStorage.getItem('token');
+      let comment_data = {
+        post: pk,
+        content: this.write_comment
+      }
+      this.$http.post('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/comment/', 
+        comment_data,
+        { 
+          headers: {
+            'Authorization' : `Token ${user_token}`,
+            // 'Content-Type': 'multipart/form-data'
+          }
+        })
+        .then(function (response) {
+            console.log(response);
+
+        }).catch(function (error) {
+        console.error(error.message);
+      });
+    },
     fetchCommentData(ppk){
       let user_token = window.localStorage.getItem('token');
       let pk = window.localStorage.getItem('this_group');
