@@ -1,5 +1,5 @@
 <template lang="pug">
-      div.nav-bg
+      div.nav-bg(v-cloak)
         nav.navbar.container
           .navbar-brand
             router-link.navbar-item(to="/MainPage")
@@ -71,6 +71,12 @@ export default {
       { headers: {'Authorization' : `Token ${user_token}`}})
                 .then(response => {
                   this.user = response.data;
+                  console.log(this.user);
+                  // console.log(this.user.profile_img);
+                  window.localStorage.setItem('user_img', this.user.profile_img);
+                  window.localStorage.setItem('user_email', this.user.email);
+                  window.localStorage.setItem('user_nickname', this.user.nickname);
+                  window.localStorage.setItem('user_username', this.user.username);
                   })
                 .catch(error => console.log(error.response));
     },
@@ -100,13 +106,6 @@ export default {
     openMobileMyMenu() {
       this.$refs.mobile_my_menu.visible = true;
     },
-    filtered_group_list(){
-      let search = this.search.trim();
-      //사용자가 정보를 입력한 경우
-      if(search){
-        this.group_list = group_list.filter(search => Object.values(search));
-      }
-    },
     inputSearch(event){
     this.search = event.target.value;
     },
@@ -130,8 +129,14 @@ export default {
 <style lang="sass">
 @import "~bulma"
 @import "~style"
+
+
 .user-img
   background: #eee
+  // overflow: hidden
+  // width: 35px
+  // height: 35px
+
 body
   // background: #eee
 .navbar-burger.burger
