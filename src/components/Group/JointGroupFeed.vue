@@ -1,6 +1,6 @@
 <template lang="pug">
       //- 가입한 그룹의 feed
-      div.container.page-wrapper
+      div.container.page-wrapper(v-cloak)
         .columns
           //- 그룹 정보 영역
           .column.is-3
@@ -72,7 +72,7 @@
                         p.title.is-4.user-name {{ post.author.nickname }}
                         p.subtitle.is-6 {{ post.created_date }}
                       //- post삭제
-                      button.delete(@click="deletePost(post.pk)")
+                      button.delete(@click="deletePost(post.pk, i)")
 
 
 
@@ -111,7 +111,6 @@
                     //-     video.responsive-svg(controls='', poster='http://bulma.io/images/placeholders/480x320.png', preload='none', width='640', height='360')
                     //-       source(src='../../assets/KakaoTalk_2017-08-02-19-43-12_Video_36.mp4', type='video/webm; codecs="vp8, vorbis"')
                     //-       track(src='', kind='captions', srclang='en', label='English captions', default='')
-
 
 
 
@@ -165,7 +164,7 @@
                                 i.fa.fa-pencil
                     
                     //- 댓글 리스트 영역
-                    article.media(v-show="showcomment" v-for="comment in comment_data" ref="togglecomment")
+                    article.media(@change="fetchCommentData(post.pk)" v-show="showcomment" v-for="comment in comment_data" ref="togglecomment")
                       figure.media-left
                         p.image.is-48x48
                           img.user-img(:src='comment.author.profile_img')
@@ -205,8 +204,7 @@
 // import {bus} from './bus'
 import WriteModal from './WriteModal';
 import LeaveGroupModal from './LeaveGroupModal';
-// import PostTemplate from './PostTemplate';
-// import PostTemplate from './PostTemplate';
+import PostTemplate from './PostTemplate';
 
 export default {
   created(){
@@ -218,8 +216,6 @@ export default {
   },
   watch: {
     deletePost(){}
-  },
-  props: {
   },
   data() {
     return {
@@ -246,7 +242,7 @@ export default {
   components: {
     WriteModal,
     LeaveGroupModal,
-    // PostTemplate,
+    PostTemplate,
   },
   methods: {
     addPostData(o){
@@ -254,12 +250,22 @@ export default {
       this.post_data.unshift(o);
       console.log(this.post_data);
     },
-    deletePost(pk){
-      console.log('pkstpk::',pk);
+    deletePost(pk, i){
+      // console.log('pkstpk::',pk);
+      // console.log('i', this.post_data[i]);
+      // let post_num = this.post_data[i];
+      // post_num.splice(0,1);
+      // this.post_data.post[i].splice(i, 1);
+      console.log('i',this.post_data);
+      // console.log('i',post_num);
       let user_token = window.localStorage.getItem('token');
       this.$http.delete('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/' + `${pk}`+ '/',
        { headers: {'Authorization' : `Token ${user_token}`}})
                 .then(response=> {
+                  // post_num.splice(0,1);
+                  // console.log('i',this.post_data);
+                  // console.log('i',post_num);
+                  this.post_data.post[i].splice(i, 1);
                 })
                 .catch(error => console.log(error.response));
     },
@@ -292,7 +298,7 @@ export default {
                   data.forEach(item => {
                     this.post_data.push(item);
                   });
-                  // console.log(data);
+                  console.log('postdata',data);
                   // console.log('this.post_data:',this.post_data);
                 })
                 // .then(write => {const datalist = Object.values(write);
@@ -361,7 +367,7 @@ export default {
     fetchCommentData(post_pk){
       // let user_token = window.localStorage.getItem('token');
       // let pk = window.localStorage.getItem('this_group');
-      // // let ppk = this.post.pk;
+      // let ppk = post_pk;
       // this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group=' + `${pk}` + '/post=' + `${ppk}`,
       //  { headers: {'Authorization' : `Token ${user_token}`} })
       //           .then(response=> {
@@ -430,6 +436,7 @@ export default {
 <style lang="sass" scoped>
 @import "~bulma"
 @import "~style"
+
 .group_profile-wrapper
   width: auto
   height: auto

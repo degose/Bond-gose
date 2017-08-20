@@ -1,5 +1,5 @@
 <template lang="pug">
-  div
+  div(v-cloak)
     .page-wrapper
       .container.grouplist
         .columns.grouplist-wrapper
@@ -82,6 +82,7 @@ export default {
       )
       .then(response => {
         this.group_list = response.data.results;
+        console.log('group',this.group_list);
 
       })
       .catch(error => {

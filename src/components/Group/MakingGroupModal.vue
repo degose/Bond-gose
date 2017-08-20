@@ -1,5 +1,5 @@
 <template lang="pug">
-  .modal(v-if="visible" class="is-active")
+  .modal(v-if="visible" class="is-active" v-cloak)
     .modal-background(@click="closeModal")
     .modal-card
       header.modal-card-head
@@ -136,6 +136,16 @@ export default {
         let name = data.name;
         let description = data.description;
         let profile_img = data.profile_img;
+        this.$parent.group_list.unshift({
+          description: description,
+          group_type: 'PUBLIC',
+          name: name,
+          num_of_members: 1,
+          owner:{},
+          // pk: '',
+          profile_img: profile_img,
+          tags: [],
+        });
         // console.log(profile_img);
         this.visible = false;
         // getMyGroupList();
@@ -159,7 +169,7 @@ export default {
   width: 100%
   height: 320px
   overflow: hidden
-  background: url('http://bulma.io/images/placeholders/640x320.png')
+  background: url('../../assets/640x320_2.png')
   // background-position: center
 
 .group-name-input
