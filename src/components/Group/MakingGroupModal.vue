@@ -81,9 +81,9 @@ export default {
     // $route(newVal, oldVal) {
     //   newVal.query.group_list !== oldVal.query.group_list && this.getMyGroupList();
     // },
-    $route(newVal, oldVal) {
-      newVal.query.group_list !== oldVal.query.group_list && this.getMyGroupList();
-    },
+    // $route(newVal, oldVal) {
+    //   newVal.query.group_list !== oldVal.query.group_list && this.getMyGroupList();
+    // },
     // createGroup()
   },
   methods: {
@@ -119,8 +119,12 @@ export default {
 
       formData.append('name', this.group.name);
       formData.append('description', this.group.description);
-      formData.append('profile_img', this.$refs.file_input.files[0]);
-
+      if( !!this.$refs.file_input.files[0] ){
+        formData.append('profile_img', this.$refs.file_input.files[0]);
+      }
+      // for (var pair of formData.entries()) {
+      //   console.log(pair[0]+ ', ' + pair[1]); 
+      // }
       this.$http.post(
         this.$store.state.api_grouplist, 
         formData,
@@ -169,7 +173,7 @@ export default {
   width: 100%
   height: 320px
   overflow: hidden
-  background: url('../../assets/640x320_2.png')
+  background: url('../../assets/no-group.png')
   // background-position: center
 
 .group-name-input

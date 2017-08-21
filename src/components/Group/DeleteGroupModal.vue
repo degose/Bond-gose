@@ -35,7 +35,7 @@ export default {
   methods: {
     closeModal(){
       this.visible = false;
-    }
+    },
   }
 }
 </script>

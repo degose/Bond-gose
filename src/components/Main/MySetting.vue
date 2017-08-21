@@ -8,7 +8,7 @@
         nav.level
           .level-item.has-text-centered
             figure.image.is-128x128.profilepic
-              img(v-if='userinput.profile_img' :src='uploadMyImg' alt='my profile image')
+              img(v-if='userinput.profile_img' :src='uploadMyImg' alt='my profile image' width=128 height=128)
         nav.level
           .level-item.has-text-centered
             .file.is-primary.is-small
@@ -109,8 +109,13 @@ export default {
       let pk = window.localStorage.getItem('pk');
       let formData = new FormData();
 
-      formData.append('nickname', this.userinput.nickname);
-      formData.append('profile_img', this.$refs.file_input.files[0]);
+      if(!!this.userinput.nickname){
+        formData.append('nickname', this.userinput.nickname);
+      }
+      if(!!this.$refs.file_input.files[0]){
+        formData.append('profile_img', this.$refs.file_input.files[0]);
+      }
+
       // console.log('profile_img:',this.$refs.file_input.files[0])
 
       this.$http.patch(
@@ -173,7 +178,7 @@ export default {
 @import "~style"
 
 .profilepic
-  background: #eee url('../../assets/no_profile.png')
+  background: #eee
   width: 128px
   height: 128px
   overflow: hidden

@@ -14,10 +14,10 @@
                 div
                   span 멤버 {{ group_data.num_of_members }}
                   |  · 
-                  a(aria-label="open leave group modal" @click.prevent="deletegroup") 
-                    span.icon.is-small
-                      i.fa.fa-cog(aria-hidden='true')
-                    | 그룹 삭제
+                  //- a(aria-label="open leave group modal" @click.prevent="deletegroup") 
+                  //-   span.icon.is-small
+                  //-     i.fa.fa-cog(aria-hidden='true')
+                  //-   | 그룹 삭제
                   a(aria-label="open leave group modal" @click.prevent="deletemembership") 
                     span.icon.is-small
                       i.fa.fa-cog(aria-hidden='true')
@@ -137,7 +137,6 @@ export default {
     return{
       visible: false,
       group_data:[],
-
     }
   },  
   methods: {
@@ -159,6 +158,24 @@ export default {
                 })
                 .catch(error => console.log(error.response));
     },
+    deletemembership(){
+          let pk = window.localStorage.getItem('this_group');
+          console.log(pk)
+          let user_token = window.localStorage.getItem('token');
+          console.log(user_token)
+          this.$http.delete('http://bond.ap-northeast-2.elasticbeanstalk.com/api/member/membership/',
+                  {group: pk},
+                  { headers: {'Authorization' : `Token ${user_token}`}})
+                  .then(response => {
+                    console.log(response)
+                    // this.$router.push({ path: '/NoneJointGroupFeed/', query: { group: `${pk}` }});
+                  })
+                  .catch(error =>{
+                    console.error(error.response)
+                    if(error.response.status === 401)
+                    alert(error.response.data.detail)
+                  })
+    },
   }
 }
 </script>
@@ -167,6 +184,16 @@ export default {
 @import "~bulma"
 @import "~style"
 
+.group_profile-wrapper
+  width: auto
+  height: auto
+  min-height: 100px
+  max-height: 135px
+  overflow: hidden
+.group_profile_img
+  background: url('http://bulma.io/images/placeholders/1280x960.png')
+  // overflow: hidden
+
 body
   background: #eee
 
@@ -174,7 +201,8 @@ body
   min-height: 87vh
 
 .user-img
-  border-radius: 50%
+  background: #eee
+
 .namelist,
   padding-top: 13px
 .tag.is-rounded

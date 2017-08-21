@@ -52,40 +52,40 @@
 
                 
                 //- 좋아요, 댓글 개수
-                footer.card-footer
-                  button(type="submit" @click="addLike(post.pk)").card-footer-item.btn-show-like
-                    span.icon-like
-                      i.fa.fa-heart-o(v-show="!like")
-                      i.fa.fa-heart(v-show="like")
-                    | &nbsp;  
-                    | {{ post.like_count }}
-                  button(@click="showComment($event)").card-footer-item.btn-show-comment
-                    | 댓글
-                    | {{ post.comment_count }}
-                    | &nbsp; 
-                    span.icon.is-small(v-show="!showcomment")
-                      i.fa.fa-angle-down(aria-hidden='true')
-                    span.icon.is-small(v-show="showcomment")
-                      i.fa.fa-angle-up(aria-hidden='true')
+                //- footer.card-footer
+                //-   button(type="submit" @click="addLike(post.pk)").card-footer-item.btn-show-like
+                //-     span.icon-like
+                //-       i.fa.fa-heart-o(v-show="!like")
+                //-       i.fa.fa-heart(v-show="like")
+                //-     | &nbsp;  
+                //-     | {{ post.like_count }}
+                //-   button(@click="showComment($event)").card-footer-item.btn-show-comment
+                //-     | 댓글
+                //-     | {{ post.comment_count }}
+                //-     | &nbsp; 
+                //-     span.icon.is-small(v-show="!showcomment")
+                //-       i.fa.fa-angle-down(aria-hidden='true')
+                //-     span.icon.is-small(v-show="showcomment")
+                //-       i.fa.fa-angle-up(aria-hidden='true')
                       
 
               //- 댓글 영역
-              .card(v-if="comment")
-                .card-content
-                  //- 댓글 리스트 영역
-                  article.media(v-show="showcomment" v-for="comment in comment_data" ref="togglecomment")
-                    figure.media-left
-                      p.image.is-48x48
-                        img.user-img(:src='comment.author.profile_img')
-                    .media-content
-                      .content
-                        p
-                          strong {{ comment.author.nickname }}
-                          br
-                          | {{ comment.content }}
-                          br
-                          small
-                            | {{ comment.created_date }}
+              //- .card(v-if="comment")
+              //-   .card-content
+              //-     //- 댓글 리스트 영역
+              //-     article.media(v-show="showcomment" v-for="comment in comment_data" ref="togglecomment")
+              //-       figure.media-left
+              //-         p.image.is-48x48
+              //-           img.user-img(:src='comment.author.profile_img')
+              //-       .media-content
+              //-         .content
+              //-           p
+              //-             strong {{ comment.author.nickname }}
+              //-             br
+              //-             | {{ comment.content }}
+              //-             br
+              //-             small
+              //-               | {{ comment.created_date }}
     main-footer
                 
 
@@ -143,7 +143,8 @@ export default {
                   .then(response => {
                     console.log(response)
                     if(response.status === 201){
-                      this.$router.push({path: '/JointGroup/', query: {group: response.data.group}});
+                      this.$router.push({path: '/JointGroup/'});
+                      // this.$router.push({path: '/JointGroup/', query: {group: response.data.group}});
                     }
                   })
                   .catch(error =>{

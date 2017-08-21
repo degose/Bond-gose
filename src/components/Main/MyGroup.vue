@@ -125,7 +125,7 @@ export default {
   min-height: 100px
   max-height: 135px
   overflow: hidden
-  // background: #eee
+  background: #eee
 
 .grouplist-wrapper
   flex-wrap: wrap

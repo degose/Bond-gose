@@ -121,6 +121,7 @@ export default {
       }
     },
     goGroup(pk, e){
+
       this.$router.push({ path: '/NoneJointGroupFeed/', query: { group: `${pk}` }});
       window.localStorage.setItem('this_group',pk);
       console.log(pk);

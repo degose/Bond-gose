@@ -19,10 +19,10 @@
                         span.icon.is-small
                           i.fa.fa-cog(aria-hidden='true')
                         | 그룹 삭제
-                      a(aria-label="open leave group modal" @click.prevent="deletemembership") 
-                        span.icon.is-small
-                          i.fa.fa-cog(aria-hidden='true')
-                        | 그룹 탈퇴
+                      //- a(aria-label="open leave group modal" @click.prevent="deletemembership") 
+                      //-   span.icon.is-small
+                      //-     i.fa.fa-cog(aria-hidden='true')
+                      //-   | 그룹 탈퇴
                 .content {{ group_data.description }}
                   
                   
@@ -107,37 +107,41 @@
 
                     //- 동영상
                     //- .content(v-if=' -1 > 0')
-                    //-   figure
-                    //-     video.responsive-svg(controls='', poster='http://bulma.io/images/placeholders/480x320.png', preload='none', width='640', height='360')
-                    //-       source(src='../../assets/KakaoTalk_2017-08-02-19-43-12_Video_36.mp4', type='video/webm; codecs="vp8, vorbis"')
-                    //-       track(src='', kind='captions', srclang='en', label='English captions', default='')
+                      figure
+                        video.responsive-svg(controls='', poster='http://bulma.io/images/placeholders/480x320.png', preload='none', width='640', height='360')
+                          source(src='../../assets/KakaoTalk_2017-08-02-19-43-12_Video_36.mp4', type='video/webm; codecs="vp8, vorbis"')
+                          track(src='', kind='captions', srclang='en', label='English captions', default='')
 
 
 
                     //- 첨부파일
                     //- .content(v-if=' -1 > 0')
-                    //-   .file-box
-                    //-     a(href='#')
-                    //-       .columns.is-mobile
-                    //-         .column.is-1
-                    //-           span
-                    //-             i.fa.fa-folder-open-o
-                    //-         .column 
-                    //-           span
-                    //-             p README.md
-                    //-         .column.is-1
-                    //-           span
-                    //-             i.fa.fa-arrow-down
+                      .file-box
+                        a(href='#')
+                          .columns.is-mobile
+                            .column.is-1
+                              span
+                                i.fa.fa-folder-open-o
+                            .column 
+                              span
+                                p README.md
+                            .column.is-1
+                              span
+                                i.fa.fa-arrow-down
+                  
                   
                   //- 좋아요, 댓글 개수
                   footer.card-footer
                     button(type="submit" @click="addLike(post.pk)").card-footer-item.btn-show-like
                       span.icon-like
-                        i.fa.fa-heart-o(v-show="!like")
-                        i.fa.fa-heart(v-show="like")
+                        i.fa.fa-heart-o(v-if="!post.is_like")
+                        i.fa.fa-heart(v-else)
+                        //- i.fa.fa-heart-o(v-show="!like")
+                        //- i.fa.fa-heart(v-show="like")
                       | &nbsp;  
                       | {{ post.like_count }}
-                    button(@click="showComment($event)").card-footer-item.btn-show-comment
+                    //- button(@click="showComment($event)").card-footer-item.btn-show-comment
+                    button(@click="fetchCommentData(post.pk)").card-footer-item.btn-show-comment
                       | 댓글
                       | {{ post.comment_count }}
                       | &nbsp; 
@@ -155,16 +159,17 @@
                       .media-content.columns.is-mobile
                         .field.column.is-10.is-3-mobile
                           .control
-                            textarea.textarea.textarea-comment(placeholder='댓글을 달아주세요.' v-model="write_comment")
+                            textarea.textarea.textarea-comment(placeholder='댓글을 달아주세요.' v-model="write_comment" ref="comment_area")
                         .field.column.is-2.is-1-mobile
                           .control
-                            button.btn-comment.btn-default.is-hidden-mobile(type="button" @click="writeCommentSubmit(post.pk)") 댓글 달기
+                            button.btn-comment.btn-default.is-hidden-mobile(type="button" @click="writeCommentSubmit(post.pk)" ) 댓글 달기
                             button.btn-comment.btn-default.is-hidden-desktop.is-hidden-tablet(type="button" @click="writeCommentSubmit(post.pk)")
                               span.icon
                                 i.fa.fa-pencil
                     
                     //- 댓글 리스트 영역
-                    article.media(@change="fetchCommentData(post.pk)" v-show="showcomment" v-for="comment in comment_data" ref="togglecomment")
+                    //- article.media(v-show="showcomment" v-for="comment in comment_data" ref="togglecomment")
+                    article.media(v-for="comment in comment_data")
                       figure.media-left
                         p.image.is-48x48
                           img.user-img(:src='comment.author.profile_img')
@@ -177,7 +182,8 @@
                             br
                             small
                               | {{ comment.created_date }}
-                      
+                      button.delete(@click="deleteComment(comment.pk, post.pk)")
+
                       //- 드롭다운 버튼
                       //- .dropdown.is-right.is-active
                         .dropdown-trigger
@@ -196,6 +202,7 @@
                             
         write-modal(close_message="close lightbox" ref='write_modal')
         leave-group-modal(close_message="close lightbox" ref='leave_group_modal')
+        delete-post-modal(close_message="close lightbox" ref='delete_post_modal')
 
         
 </template>
@@ -205,17 +212,18 @@
 import WriteModal from './WriteModal';
 import LeaveGroupModal from './LeaveGroupModal';
 import PostTemplate from './PostTemplate';
+import DeletePostModal from './DeletePostModal';
 
 export default {
   created(){
     this.fetchGroupData();
     this.fetchPostData();
-    this.fetchCommentData();
+    // this.fetchCommentData();
     // bus.$on('add-post-data')
     // this.deletePost();
   },
   watch: {
-    deletePost(){}
+    // deletePost(){}
   },
   data() {
     return {
@@ -224,8 +232,8 @@ export default {
       dropdownpost: false,
       dropdowncomment: false,
       showcomment: false,
-      like: false,
-      like_or_not: '',
+      // like: false,
+      // like_or_not: '',
       write: {
         // 텍스트 내용
         content:'',
@@ -243,6 +251,7 @@ export default {
     WriteModal,
     LeaveGroupModal,
     PostTemplate,
+    DeletePostModal
   },
   methods: {
     addPostData(o){
@@ -251,21 +260,11 @@ export default {
       console.log(this.post_data);
     },
     deletePost(pk, i){
-      // console.log('pkstpk::',pk);
-      // console.log('i', this.post_data[i]);
-      // let post_num = this.post_data[i];
-      // post_num.splice(0,1);
-      // this.post_data.post[i].splice(i, 1);
-      console.log('i',this.post_data);
-      // console.log('i',post_num);
+      // console.log('i',this.post_data);
       let user_token = window.localStorage.getItem('token');
       this.$http.delete('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/' + `${pk}`+ '/',
        { headers: {'Authorization' : `Token ${user_token}`}})
                 .then(response=> {
-                  // post_num.splice(0,1);
-                  // console.log('i',this.post_data);
-                  // console.log('i',post_num);
-                  this.post_data.post[i].splice(i, 1);
                 })
                 .catch(error => console.log(error.response));
     },
@@ -295,10 +294,11 @@ export default {
                 .then(response=> {
                   // this.post_data = response.data.results;
                   let data = response.data.results;
+                  console.log('like',data);
                   data.forEach(item => {
                     this.post_data.push(item);
                   });
-                  console.log('postdata',data);
+                  // console.log('postdata',data);
                   // console.log('this.post_data:',this.post_data);
                 })
                 // .then(write => {const datalist = Object.values(write);
@@ -345,12 +345,14 @@ export default {
     },
     writeCommentSubmit(pk){
       let user_token = window.localStorage.getItem('token');
-      let comment_data = {
+      let user_img = window.localStorage.getItem('user_img');
+      let user_nickname = window.localStorage.getItem('user_nickname');
+      let comment_submit_data = {
         post: pk,
         content: this.write_comment
       }
       this.$http.post('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/comment/', 
-        comment_data,
+        comment_submit_data,
         { 
           headers: {
             'Authorization' : `Token ${user_token}`,
@@ -358,28 +360,42 @@ export default {
           }
         })
         .then(function (response) {
-            console.log(response);
-
+            let data = response.data;
+            // console.log('comment:',data);
+            // this.comment_data.unshift({
+            //   author: {
+            //     // email: author.email,
+            //     nickname: user_nickname,
+            //     // pk: author.pk,
+            //     profile_img: user_img,
+            //     // username: author.nickname
+            //   },
+            //   content: data.content,
+            //   created_date: data.created_date,
+            //   pk: data.pk,
+            //   post: data.post,
+            // })
         }).catch(function (error) {
         console.error(error.message);
       });
     },
     fetchCommentData(post_pk){
-      // let user_token = window.localStorage.getItem('token');
-      // let pk = window.localStorage.getItem('this_group');
-      // let ppk = post_pk;
+      let user_token = window.localStorage.getItem('token');
+      let pk = window.localStorage.getItem('this_group');
+      let ppk = post_pk;
+      console.log('postpk', ppk);
+      let post = {
+        post: ppk
+      }
+      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/comment/', post,
       // this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group=' + `${pk}` + '/post=' + `${ppk}`,
-      //  { headers: {'Authorization' : `Token ${user_token}`} })
-      //           .then(response=> {
-      //             this.comment_data = response.data.results;
-      //             console.log('this.comment_data:',this.comment_data);
-      //           })
-      //           // .then(write => {const datalist = Object.values(write);
-      //           // this.datalist = datalist;
-      //           // })
-      //           // 
-      //           // .then(data => console.log(data))
-      //           .catch(error => console.log(error.response));
+       { headers: {'Authorization' : `Token ${user_token}`} })
+                .then(response=> {
+                  this.comment_data = response.data.results;
+                  // console.log('this.comment_data:',this.comment_data);
+                  console.log('comment::',response);
+                })
+                .catch(error => console.log(error.response));
     },
     openDropdownPost(e) {
       // this.e.target
@@ -399,34 +415,49 @@ export default {
     showComment(e) {
       let el = this.$refs.togglecomment
       let target = e.target
-      // console.log(el);
-      // console.log(target);
-      // if(el !== target && !el.includes(target)){
-      //   // this.visible = false;
-      // this.showcomment = !this.showcomment;
-      // }
+      console.log(el);
+      console.log(target);
+      if(el !== target && !el.includes(target)){
+        // this.visible = false;
+      this.showcomment = !this.showcomment;
+      }
     },
     addLike(pk) {
       let user_token = window.localStorage.getItem('token');
       console.log('pk:',pk);
       console.log('token:',user_token);
       // /api/post/<pk>/post-like-toggle
-      this.$http.post('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/' + `${pk}`+ '/post-like-toggle/',
+      this.$http.post('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/' + `${pk}`+ '/post-like-toggle/', true,
        { headers: {'Authorization' : `Token ${user_token}`}})
                 .then(response=> {
-                  // this.like_or_not = response.like_or_not;
-                  // console.log('this.group_datalist:',this.group_data);
-                  // this.like_or_not = response.data;
                   console.log('like.response:',response);
+                  let data = response.data;
+                  // this.post.like_count
                 })
                 .catch(error => console.log(error.response));
       // this.like = !this.like;
     },
-    delData(){
-      this.$http.delete(this.$store.state.api_write, this.write)
-      .then(response => console.log(response)
-      //  { return response.json()}
-       ).catch(error => console.log(error.message));
+    deleteComment(pk,ppk){
+      console.log(pk);
+      console.log(ppk);
+      let post = {
+        post: ppk
+      }
+      let user_token = window.localStorage.getItem('token');
+      this.$http.delete('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/comment/' + `${pk}` + '/',
+      { headers: {'Authorization' : `Token ${user_token}`}})
+      .then(response => {
+        this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/comment/', post,
+        { headers: {'Authorization' : `Token ${user_token}`}})
+        .then(response=> {
+          this.comment_data = response.data.results;
+            // console.log('this.comment_data:',this.comment_data);
+            console.log('comment::',response);
+          })
+          .catch(error => console.log('get-error:',error.response));
+        console.log(response);
+        })
+      .catch(error => console.log('delete-error:',error.response));
     },
   }
 }
@@ -469,7 +500,6 @@ body
     color: $bond
   &:active
     color: $bond
-
 
 
 
