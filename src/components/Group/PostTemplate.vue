@@ -5,12 +5,12 @@
                     article.media
                       .media-left
                         figure.image.is-64x64.img-user
-                          img.user-img(:src='author.profile_img', alt='Image')
+                          img.user-img(:src='a.author.profile_img', alt='Image')
                       .media-content
-                        p.title.is-4.user-name {{ data_list[i].author.nickname }}
-                        //- p.subtitle.is-6 {{ created_date }}
+                        p.title.is-4.user-name {{ a.author.nickname }}
+                        p.subtitle.is-6 {{ a.created_date }}
                       //- post삭제
-                      button.delete(@click="deletePost(post_data.pk)")
+                      button.delete(@click="deletePost(a.pk)")
 
 
 
@@ -34,13 +34,13 @@
 
                     //- 글 (최상위)
                     .content
-                      | {{ post_data.content }}
+                      | {{ a.content }}
 
                       
                     //- 이미지
-                    .content(v-if="post_data.image")
+                    .content(v-if="a.image")
                       figure.image
-                        img(:src='post_data.post.image')
+                        img(:src='a.post.image')
 
 
                     //- 동영상
@@ -70,18 +70,18 @@
                   
                   //- 좋아요, 댓글 개수
                   footer.card-footer
-                    button(type="submit" @click="addLike(post_data.pk)").card-footer-item.btn-show-like
+                    button(type="submit" @click="addLike(a.pk)").card-footer-item.btn-show-like
                       span.icon-like
-                        i.fa.fa-heart-o(v-if="!post_data.is_like")
+                        i.fa.fa-heart-o(v-if="!a.is_like")
                         i.fa.fa-heart(v-else)
                         //- i.fa.fa-heart-o(v-show="!like")
                         //- i.fa.fa-heart(v-show="like")
                       | &nbsp;  
-                      | {{ post_data.like_count }}
+                      | {{ a.like_count }}
                     //- button(@click="showComment($event)").card-footer-item.btn-show-comment
-                    button(@click="fetchCommentData(post_data.pk)").card-footer-item.btn-show-comment
+                    button(@click="fetchCommentData(a.pk)").card-footer-item.btn-show-comment
                       | 댓글
-                      | {{ post_data.comment_count }}
+                      | {{ a.comment_count }}
                       | &nbsp; 
                       span.icon.is-small(v-show="!showcomment")
                         i.fa.fa-angle-down(aria-hidden='true')
@@ -100,8 +100,8 @@
                             textarea.textarea.textarea-comment(placeholder='댓글을 달아주세요.' v-model="write_comment" ref="comment_area")
                         .field.column.is-2.is-1-mobile
                           .control
-                            button.btn-comment.btn-default.is-hidden-mobile(type="button" @click="writeCommentSubmit(post_data.post.pk)" ) 댓글 달기
-                            button.btn-comment.btn-default.is-hidden-desktop.is-hidden-tablet(type="button" @click="writeCommentSubmit(post_data.post.pk)")
+                            button.btn-comment.btn-default.is-hidden-mobile(type="button" @click="writeCommentSubmit(a.pk)" ) 댓글 달기
+                            button.btn-comment.btn-default.is-hidden-desktop.is-hidden-tablet(type="button" @click="writeCommentSubmit(a.post.pk)")
                               span.icon
                                 i.fa.fa-pencil
                     
@@ -120,7 +120,7 @@
                             br
                             small
                               | {{ comment.created_date }}
-                      button.delete(@click="deleteComment(comment.pk, post_data.pk)")
+                      button.delete(@click="deleteComment(comment.pk, a.pk)")
 
                 //- .columns.is-mobile.pagination-wrapper
                 //-   .column.is-offset-4.is-one-third.has-text-centered
@@ -139,7 +139,7 @@
 export default {
   created(){
     // this.fetchGroupData();
-    this.fetchPostData();
+    // this.fetchPostData();
     // this.fetchCommentData();
     // bus.$on('add-post-data')
     // this.deletePost();
@@ -147,6 +147,7 @@ export default {
   watch: {
     // deletePost(){}
   },
+  props:['a'],
   data() {
     return {
       write_comment: '',
@@ -197,41 +198,41 @@ export default {
                 })
                 .catch(error => console.log(error.response));
     },
-    fetchPostData(direction){
-      let user_token = window.localStorage.getItem('token');
-      let pk = window.localStorage.getItem('this_group');
-      let path = null;
-      let page_num = 1;
-      if (this.page_num.trim() === ''){
-        path = 'http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/?group=' + `${pk}` + '&page=' +`${page_num}`
-      }
-      else{
-        path = this.pagination[direction];
-        page_num = this.page_num;
-      }
-      this.$http.get(path,
-       { headers: {'Authorization' : `Token ${user_token}`} })
-                .then(response=> {
-                  // this.post_data = response.data.results;
-                  let data = response.data.results;
-                  console.log('data',data);
-                  data.forEach(item => {
-                    this.post_data.push(item);
-                  });
-                  console.log('profile_img',data[0].author.profile_img);
-                  this.pagination.next = response.data.next;
-                  this.pagination.prev = response.data.previous;
-                  this.$router.push({ path: '/JointGroup/', query: { page: `${page_num}` }});
-                  // console.log(response)                  
-                  // console.log('this.post_data:',this.post_data);
-                })
-                // .then(write => {const datalist = Object.values(write);
-                // this.datalist = datalist;
-                // })
-                // 
-                // .then(data => console.log(data))
-                .catch(error => console.log(error.response));
-    },
+    // fetchPostData(direction){
+    //   let user_token = window.localStorage.getItem('token');
+    //   let pk = window.localStorage.getItem('this_group');
+    //   let path = null;
+    //   let page_num = 1;
+    //   if (this.page_num.trim() === ''){
+    //     path = 'http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/?group=' + `${pk}` + '&page=' +`${page_num}`
+    //   }
+    //   else{
+    //     path = this.pagination[direction];
+    //     page_num = this.page_num;
+    //   }
+    //   this.$http.get(path,
+    //    { headers: {'Authorization' : `Token ${user_token}`} })
+    //             .then(response=> {
+    //               // this.post_data = response.data.results;
+    //               let data = response.data.results;
+    //               console.log('data',data);
+    //               data.forEach(item => {
+    //                 this.post_data.push(item);
+    //               });
+    //               console.log('profile_img',data[0].author.profile_img);
+    //               this.pagination.next = response.data.next;
+    //               this.pagination.prev = response.data.previous;
+    //               this.$router.push({ path: '/JointGroup/', query: { page: `${page_num}` }});
+    //               // console.log(response)                  
+    //               // console.log('this.post_data:',this.post_data);
+    //             })
+    //             // .then(write => {const datalist = Object.values(write);
+    //             // this.datalist = datalist;
+    //             // })
+    //             // 
+    //             // .then(data => console.log(data))
+    //             .catch(error => console.log(error.response));
+    // },
     nextPage(){
       // "http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/?group=210&page=2".slice(-1) => 2
       let api_path = this.pagination.next;

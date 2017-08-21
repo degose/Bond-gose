@@ -60,7 +60,7 @@
 
             //- div.feed-box(@add-post-data="addPostData" v-for="(post, i) in post_data")
             div.feed-box(v-for="(post, i) in post_data")
-              post-template
+              post-template(:a = "post")
               //- div.card-wrapper(@add-post-data="addPostData" v-for="(post, i) in post_data")
                 .card
                   .card-content
@@ -313,6 +313,7 @@ export default {
        { headers: {'Authorization' : `Token ${user_token}`} })
                 .then(response=> {
                   // this.post_data = response.data.results;
+                  console.log('dd',response);
                   let data = response.data.results;
                   // console.log('like',data);
                   data.forEach(item => {
