@@ -5,12 +5,12 @@
                     article.media
                       .media-left
                         figure.image.is-64x64.img-user
-                          img.user-img(:src='a.author.profile_img', alt='Image')
+                          img.user-img(:src='post.author.profile_img', alt='Image')
                       .media-content
-                        p.title.is-4.user-name {{ a.author.nickname }}
-                        p.subtitle.is-6 {{ a.created_date }}
+                        p.title.is-4.user-name {{ post.author.nickname }}
+                        p.subtitle.is-6 {{ post.created_date }}
                       //- post삭제
-                      button.delete(@click="deletePost(a.pk)")
+                      button.delete(@click="deletePost(post.pk)")
 
 
 
@@ -34,17 +34,17 @@
 
                     //- 글 (최상위)
                     .content
-                      | {{ a.content }}
+                      | {{ post.content }}
 
                       
                     //- 이미지
-                    .content(v-if="a.image")
+                    .content(v-if="post.image")
                       figure.image
-                        img(:src='a.post.image')
+                        img(:src='post.image')
 
 
                     //- 동영상
-                    //- .content(v-if=' -1 > 0')
+                    //- .content(v-if=' -1 > 0')s
                       figure
                         video.responsive-svg(controls='', poster='http://bulma.io/images/placeholders/480x320.png', preload='none', width='640', height='360')
                           source(src='../../assets/KakaoTalk_2017-08-02-19-43-12_Video_36.mp4', type='video/webm; codecs="vp8, vorbis"')
@@ -70,18 +70,18 @@
                   
                   //- 좋아요, 댓글 개수
                   footer.card-footer
-                    button(type="submit" @click="addLike(a.pk)").card-footer-item.btn-show-like
+                    button(type="submit" @click="addLike(post.pk)").card-footer-item.btn-show-like
                       span.icon-like
-                        i.fa.fa-heart-o(v-if="!a.is_like")
+                        i.fa.fa-heart-o(v-if="!post.is_like")
                         i.fa.fa-heart(v-else)
                         //- i.fa.fa-heart-o(v-show="!like")
                         //- i.fa.fa-heart(v-show="like")
                       | &nbsp;  
-                      | {{ a.like_count }}
+                      | {{ post.like_count }}
                     //- button(@click="showComment($event)").card-footer-item.btn-show-comment
-                    button(@click="fetchCommentData(a.pk)").card-footer-item.btn-show-comment
+                    button(@click="fetchCommentData(post.pk)").card-footer-item.btn-show-comment
                       | 댓글
-                      | {{ a.comment_count }}
+                      | {{ post.comment_count }}
                       | &nbsp; 
                       span.icon.is-small(v-show="!showcomment")
                         i.fa.fa-angle-down(aria-hidden='true')
@@ -100,8 +100,8 @@
                             textarea.textarea.textarea-comment(placeholder='댓글을 달아주세요.' v-model="write_comment" ref="comment_area")
                         .field.column.is-2.is-1-mobile
                           .control
-                            button.btn-comment.btn-default.is-hidden-mobile(type="button" @click="writeCommentSubmit(a.pk)" ) 댓글 달기
-                            button.btn-comment.btn-default.is-hidden-desktop.is-hidden-tablet(type="button" @click="writeCommentSubmit(a.pk)")
+                            button.btn-comment.btn-default.is-hidden-mobile(type="button" @click="writeCommentSubmit(post.pk)" ) 댓글 달기
+                            button.btn-comment.btn-default.is-hidden-desktop.is-hidden-tablet(type="button" @click="writeCommentSubmit(post.pk)")
                               span.icon
                                 i.fa.fa-pencil
                     
@@ -120,21 +120,13 @@
                             br
                             small
                               | {{ comment.created_date }}
-                      button.delete(@click="deleteComment(comment.pk, a.pk)")
+                      button.delete(@click="deleteComment(comment.pk, post.pk)")
 
-                //- .columns.is-mobile.pagination-wrapper
-                //-   .column.is-offset-4.is-one-third.has-text-centered
-                //-     button.pagination-next.pagination-btn.is-centered(@click="nextPage()" :disabled='pagination.next === null') 더보기  
 
         
 </template>
 
 <script>
-// import {bus} from './bus'
-// import WriteModal from './WriteModal';
-// import LeaveGroupModal from './LeaveGroupModal';
-// import PostTemplate from './PostTemplate';
-// import DeletePostModal from './DeletePostModal';
 
 export default {
   created(){
@@ -147,7 +139,7 @@ export default {
   watch: {
     // deletePost(){}
   },
-  props:['a'],
+  props:['post'],
   data() {
     return {
       write_comment: '',
@@ -178,10 +170,6 @@ export default {
     }
   },
   components: {
-    // WriteModal,
-    // LeaveGroupModal,
-    // PostTemplate,
-    // DeletePostModal
   },
   methods: {
     // addPostData(o){
@@ -192,11 +180,44 @@ export default {
     deletePost(pk, i){
       // console.log('i',this.post_data);
       let user_token = window.localStorage.getItem('token');
-      this.$http.delete('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/' + `${pk}`+ '/',
-       { headers: {'Authorization' : `Token ${user_token}`}})
-                .then(response=> {
-                })
-                .catch(error => console.log(error.response));
+      this.$http.delete('https://api.thekym.com/post/' + `${pk}`+ '/',
+        { headers: {'Authorization' : `Token ${user_token}`}})
+          .then(response=> {
+            let user_token = window.localStorage.getItem('token');
+            let pk = window.localStorage.getItem('this_group');
+            let path = null;
+            let page_num = 1;
+            if (this.page_num.trim() === ''){
+              path = 'https://api.thekym.com/post/?group=' + `${pk}` + '&page=' +`${page_num}`
+            }
+            else{
+              path = this.pagination[direction];
+              page_num = this.page_num;
+            }
+            this.$http.get(path,
+              { headers: {'Authorization' : `Token ${user_token}`} })
+              .then(response=> {
+              // this.post_data = response.data.results;
+              let data = response.data.results;
+              console.log('data',data);
+              data.forEach(item => {
+                this.post_data.push(item);
+              });
+              console.log('profile_img',data[0].author.profile_img);
+              this.pagination.next = response.data.next;
+              this.pagination.prev = response.data.previous;
+              this.$router.push({ path: '/JointGroup/', query: { page: `${page_num}` }});
+              // console.log(response)                  
+              // console.log('this.post_data:',this.post_data);
+            })
+            // .then(write => {const datalist = Object.values(write);
+            // this.datalist = datalist;
+            // })
+            // 
+            // .then(data => console.log(data))
+            .catch(error => console.log(error.response));
+          })
+          .catch(error => console.log(error.response));
     },
     // fetchPostData(direction){
     //   let user_token = window.localStorage.getItem('token');
@@ -253,30 +274,11 @@ export default {
         post: pk,
         content: this.write_comment
       }
-      this.$http.post('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/comment/', 
+      this.$http.post('https://api.thekym.com/post/comment/', 
         comment_submit_data,
-        { 
-          headers: {
-            'Authorization' : `Token ${user_token}`,
-            // 'Content-Type': 'multipart/form-data'
-          }
-        })
+        { headers: {'Authorization' : `Token ${user_token}`,}})
         .then(function (response) {
             let data = response.data;
-            // console.log('comment:',data);
-            // this.comment_data.unshift({
-            //   author: {
-            //     // email: author.email,
-            //     nickname: user_nickname,
-            //     // pk: author.pk,
-            //     profile_img: user_img,
-            //     // username: author.nickname
-            //   },
-            //   content: data.content,
-            //   created_date: data.created_date,
-            //   pk: data.pk,
-            //   post: data.post,
-            // })
         }).catch(function (error) {
         console.error(error.message);
       });
@@ -284,12 +286,12 @@ export default {
     fetchCommentData(post_pk){
       let user_token = window.localStorage.getItem('token');
       let pk = window.localStorage.getItem('this_group');
-      let ppk = post_pk;
-      console.log('postpk', ppk);
-      let post = {
-        post: ppk
-      }
-      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/comment/', post,
+      // let ppk = post_pk;
+      console.log('postpk', post_pk);
+      // let post = {
+      //   post: ppk
+      // }
+      this.$http.get('https://api.thekym.com/post/comment/', post_pk,
       // this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group=' + `${pk}` + '/post=' + `${ppk}`,
        { headers: {'Authorization' : `Token ${user_token}`} })
                 .then(response=> {
@@ -328,7 +330,7 @@ export default {
       // console.log('pk:',pk);
       // console.log('token:',user_token);
       // /api/post/<pk>/post-like-toggle
-      this.$http.post('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/' + `${pk}`+ '/post-like-toggle/', true,
+      this.$http.post('https://api.thekym.com/post/' + `${pk}`+ '/post-like-toggle/', true,
        { headers: {'Authorization' : `Token ${user_token}`}})
                 .then(response=> {
                   // console.log('like.response:',response);
@@ -345,10 +347,10 @@ export default {
         post: ppk
       }
       let user_token = window.localStorage.getItem('token');
-      this.$http.delete('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/comment/' + `${pk}` + '/',
+      this.$http.delete('https://api.thekym.com/post/comment/' + `${pk}` + '/',
       { headers: {'Authorization' : `Token ${user_token}`}})
       .then(response => {
-        this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/comment/', post,
+        this.$http.get('https://api.thekym.com/post/comment/', post,
         { headers: {'Authorization' : `Token ${user_token}`}})
         .then(response=> {
           this.comment_data = response.data.results;

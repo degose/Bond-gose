@@ -60,7 +60,7 @@
 
             //- div.feed-box(@add-post-data="addPostData" v-for="(post, i) in post_data")
             div.feed-box(v-for="(post, i) in post_data")
-              post-template(:a = "post")
+              post-template(:post = "post")
               //- div.card-wrapper(@add-post-data="addPostData" v-for="(post, i) in post_data")
                 .card
                   .card-content
@@ -289,7 +289,7 @@ export default {
     fetchGroupData(){
       let user_token = window.localStorage.getItem('token');
       let pk = window.localStorage.getItem('this_group');
-      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/' + `${pk}`+ '/',
+      this.$http.get('https://api.thekym.com/group/' + `${pk}`+ '/',
        { headers: {'Authorization' : `Token ${user_token}`}})
                 .then(response=> {
                   this.group_data = response.data;
@@ -304,7 +304,7 @@ export default {
       let path = null;
       let page_num = 1;
       if (this.page_num.trim() === ''){
-        path = 'http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/?group=' + `${pk}` + '&page=' +`${page_num}`
+        path = 'https://api.thekym.com/post/?group=' + `${pk}` + '&page=' +`${page_num}`
       }
       else{
         path = this.pagination[direction];

@@ -83,7 +83,7 @@ export default {
       let path = null;
       let page_num = 1;
       if ( this.page_num.trim() === '' ) {
-        path = "http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/my-group/?page="+`${page_num}`
+        path = "https://api.thekym.com/group/my-group/?page="+`${page_num}`
       }
       else {
         path = this.pagination[direction];
@@ -112,7 +112,7 @@ export default {
       if (api_path !== null) {
       // let first = api_path.indexOf('?page=');
       // let last = api_path.indexOf('&');
-      let page_path = api_path.slice(73);
+      let page_path = api_path.slice(36);
       this.page_num = page_path
       this.getMyGroupList('next');
       // console.log('작동된다')
@@ -122,11 +122,11 @@ export default {
       let api_path = this.pagination.prev;
       // let last = api_path.indexOf('&');
       // let first = api_path.indexOf('?page=');
-      let page_path = api_path.slice(73);
+      let page_path = api_path.slice(36);
       this.page_num = page_path
 
       if(this.page_num >= 3){
-      let page_path = api_path.slice(73);
+      let page_path = api_path.slice(36);
       this.page_num = page_path;
       this.getMyGroupList('prev');}
       else{
