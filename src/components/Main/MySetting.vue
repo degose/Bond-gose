@@ -132,20 +132,7 @@ export default {
         let data = response.data;
         let nickname = data.nickname;
         let profile_img = data.profile_img;
-        // this.$parent.user.splice(1,1,{
-        //   email: '',
-        //   nickname: nickname,
-        //   pk: '',
-        //   profile_img: profile_img,
-        //   username: '',
-        // });
-        // this.$parent.user.unshift({
-        //   email: '',
-        //   nickname: nickname,
-        //   pk: '',
-        //   profile_img: profile_img,
-        //   username: '',
-        // });
+        this.$parent.user = data;
         this.visible = false;
 
       })

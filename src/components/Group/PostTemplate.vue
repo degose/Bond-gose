@@ -10,6 +10,7 @@
                         p.title.is-4.user-name {{ post.author.nickname }}
                         p.subtitle.is-6 {{ post.created_date }}
                       //- post삭제
+                      //- button.delete(@click="openDeletePostModal(post.pk)")
                       button.delete(@click="deletePost(post.pk)")
 
 
@@ -74,14 +75,19 @@
                       span.icon-like
                         i.fa.fa-heart-o(v-if="!post.is_like")
                         i.fa.fa-heart(v-else)
-                        //- i.fa.fa-heart-o(v-show="!like")
-                        //- i.fa.fa-heart(v-show="like")
                       | &nbsp;  
                       | {{ post.like_count }}
-                    //- button(@click="showComment($event)").card-footer-item.btn-show-comment
-                    button(@click="fetchCommentData(post.pk)").card-footer-item.btn-show-comment
+                    button(@click="fetchCommentData(post.pk)" v-if="comment_count <= 0").card-footer-item.btn-show-comment
                       | 댓글
                       | {{ post.comment_count }}
+                      | &nbsp; 
+                      span.icon.is-small(v-show="!showcomment")
+                        i.fa.fa-angle-down(aria-hidden='true')
+                      span.icon.is-small(v-show="showcomment")
+                        i.fa.fa-angle-up(aria-hidden='true')
+                    button(@click="fetchCommentData(post.pk)" v-else).card-footer-item.btn-show-comment
+                      | 댓글
+                      | {{ this.comment_count }}
                       | &nbsp; 
                       span.icon.is-small(v-show="!showcomment")
                         i.fa.fa-angle-down(aria-hidden='true')
@@ -106,8 +112,7 @@
                                 i.fa.fa-pencil
                     
                     //- 댓글 리스트 영역
-                    //- article.media(v-show="showcomment" v-for="comment in comment_data" ref="togglecomment")
-                    article.media(v-for="comment in comment_data")
+                    article.media(v-for="comment in comment_data" v-show="showcomment")
                       figure.media-left
                         p.image.is-48x48
                           img.user-img(:src='comment.author.profile_img')
@@ -123,44 +128,27 @@
                       button.delete(@click="deleteComment(comment.pk, post.pk)")
 
 
+
         
 </template>
 
 <script>
-
 export default {
   created(){
-    // this.fetchGroupData();
-    // this.fetchPostData();
-    // this.fetchCommentData();
-    // bus.$on('add-post-data')
-    // this.deletePost();
   },
   watch: {
-    // deletePost(){}
   },
   props:['post'],
   data() {
     return {
       write_comment: '',
       visible: false,
-      // dropdownpost: false,
-      // dropdowncomment: false,
       showcomment: false,
-      // like: false,
-      // like_or_not: '',
-      // write: {
-      //   // 텍스트 내용
-      //   content:'',
-      //   // 그룹 pk값..임의로 정해둠
-      //   group: 29
-      // },
       author: {},
-      // group_data:[],
       post_data:[],
+      comment_count: null,
       comment_data:[],
-      // target: ''
-      pk:'',
+      // pk:'',
       page_num: '',
       pagination:{
         next: '', 
@@ -172,98 +160,32 @@ export default {
   components: {
   },
   methods: {
-    // addPostData(o){
-    //   console.log(this.post_data);
-    //   this.post_data.unshift(o);
-    //   console.log(this.post_data);
-    // },
-    deletePost(pk, i){
-      // console.log('i',this.post_data);
+    deletePost(pk){
       let user_token = window.localStorage.getItem('token');
-      this.$http.delete('https://api.thekym.com/post/' + `${pk}`+ '/',
-        { headers: {'Authorization' : `Token ${user_token}`}})
+      let user_nickname = window.localStorage.getItem('user_nickname');
+      let confirmPostDelete = confirm(`${user_nickname}` + '님, 정말 이 글을 삭제하시겠습니까?');
+      if ( confirmPostDelete === true ){
+        this.$http.delete('https://api.thekym.com/post/' + `${pk}`+ '/',
+          { headers: {'Authorization' : `Token ${user_token}`}})
           .then(response=> {
-            let user_token = window.localStorage.getItem('token');
-            let pk = window.localStorage.getItem('this_group');
-            let path = null;
-            let page_num = 1;
-            if (this.page_num.trim() === ''){
-              path = 'https://api.thekym.com/post/?group=' + `${pk}` + '&page=' +`${page_num}`
-            }
-            else{
-              path = this.pagination[direction];
-              page_num = this.page_num;
-            }
-            this.$http.get(path,
+            let group_pk = window.localStorage.getItem('this_group');
+            this.$http.get('https://api.thekym.com/post/?group=' + `${group_pk}`,
               { headers: {'Authorization' : `Token ${user_token}`} })
               .then(response=> {
-              // this.post_data = response.data.results;
-              let data = response.data.results;
-              console.log('data',data);
-              data.forEach(item => {
-                this.post_data.push(item);
-              });
-              console.log('profile_img',data[0].author.profile_img);
-              this.pagination.next = response.data.next;
-              this.pagination.prev = response.data.previous;
-              this.$router.push({ path: '/JointGroup/', query: { page: `${page_num}` }});
-              // console.log(response)                  
-              // console.log('this.post_data:',this.post_data);
-            })
-            // .then(write => {const datalist = Object.values(write);
-            // this.datalist = datalist;
-            // })
-            // 
-            // .then(data => console.log(data))
-            .catch(error => console.log(error.response));
+                let data = response.data.results;
+                let post_data = []
+                data.forEach(item => {
+                  post_data.push(item);
+                });
+                this.$parent.post_data = post_data;
+              })
           })
-          .catch(error => console.log(error.response));
-    },
-    // fetchPostData(direction){
-    //   let user_token = window.localStorage.getItem('token');
-    //   let pk = window.localStorage.getItem('this_group');
-    //   let path = null;
-    //   let page_num = 1;
-    //   if (this.page_num.trim() === ''){
-    //     path = 'http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/?group=' + `${pk}` + '&page=' +`${page_num}`
-    //   }
-    //   else{
-    //     path = this.pagination[direction];
-    //     page_num = this.page_num;
-    //   }
-    //   this.$http.get(path,
-    //    { headers: {'Authorization' : `Token ${user_token}`} })
-    //             .then(response=> {
-    //               // this.post_data = response.data.results;
-    //               let data = response.data.results;
-    //               console.log('data',data);
-    //               data.forEach(item => {
-    //                 this.post_data.push(item);
-    //               });
-    //               console.log('profile_img',data[0].author.profile_img);
-    //               this.pagination.next = response.data.next;
-    //               this.pagination.prev = response.data.previous;
-    //               this.$router.push({ path: '/JointGroup/', query: { page: `${page_num}` }});
-    //               // console.log(response)                  
-    //               // console.log('this.post_data:',this.post_data);
-    //             })
-    //             // .then(write => {const datalist = Object.values(write);
-    //             // this.datalist = datalist;
-    //             // })
-    //             // 
-    //             // .then(data => console.log(data))
-    //             .catch(error => console.log(error.response));
-    // },
-    nextPage(){
-      // "http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/?group=210&page=2".slice(-1) => 2
-      let api_path = this.pagination.next;
-      if (api_path !== null) {
-      // let first = api_path.indexOf('?page=');
-      // let last = api_path.indexOf('&');
-      let page_path = api_path.slice(-1);
-      this.page_num = page_path
-      this.fetchPostData('next');
-      // console.log('작동된다')
+          .catch(error => {
+            if (error.response.status === 403){
+              alert('작성자만 요청할 수 있는 작업입니다.');
+            }
+            console.log(error.response);
+          });
       }
     },
     writeCommentSubmit(pk){
@@ -277,8 +199,9 @@ export default {
       this.$http.post('https://api.thekym.com/post/comment/', 
         comment_submit_data,
         { headers: {'Authorization' : `Token ${user_token}`,}})
-        .then(function (response) {
-            let data = response.data;
+        .then(response => {
+          this.fetchCommentData(pk);
+          this.showcomment = !this.showcomment;
         }).catch(function (error) {
         console.error(error.message);
       });
@@ -286,81 +209,67 @@ export default {
     fetchCommentData(post_pk){
       let user_token = window.localStorage.getItem('token');
       let pk = window.localStorage.getItem('this_group');
-      // let ppk = post_pk;
-      console.log('postpk', post_pk);
-      // let post = {
-      //   post: ppk
-      // }
-      this.$http.get('https://api.thekym.com/post/comment/', post_pk,
-      // this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group=' + `${pk}` + '/post=' + `${ppk}`,
+      this.$http.get('https://api.thekym.com/post/comment/?post=' + `${post_pk}`,
        { headers: {'Authorization' : `Token ${user_token}`} })
                 .then(response=> {
+                  this.comment_count = response.data.count;
                   this.comment_data = response.data.results;
                   // console.log('this.comment_data:',this.comment_data);
-                  console.log('comment::',response);
+                  // console.log('comment::',response);
+                  this.showcomment = !this.showcomment;
                 })
                 .catch(error => console.log(error.response));
-    },
-    // openDropdownPost(e) {
-    //   // this.e.target
-    //   // let el = this.$refs.dropdownpostref
-    //   // let target = e.target
-    //   // console.log(el);
-    //   // console.log(target);
-    //   // if(el !== target && !el.contains(target)){
-    //   //   this.visible = false;
-    //   // }
-    //   // this.dropdownpost = !this.dropdownpost;
-    // },
-    // openDropdownComment(e) {
-    //   this.dropdowncomment = !this.dropdowncomment;
-    // },
-    showComment(e) {
-      let el = this.$refs.togglecomment
-      let target = e.target
-      console.log(el);
-      console.log(target);
-      if(el !== target && !el.includes(target)){
-        // this.visible = false;
-      this.showcomment = !this.showcomment;
-      }
     },
     addLike(pk) {
       let user_token = window.localStorage.getItem('token');
       // console.log('pk:',pk);
       // console.log('token:',user_token);
-      // /api/post/<pk>/post-like-toggle
       this.$http.post('https://api.thekym.com/post/' + `${pk}`+ '/post-like-toggle/', true,
        { headers: {'Authorization' : `Token ${user_token}`}})
-                .then(response=> {
-                  // console.log('like.response:',response);
-                  let data = response.data;
-                  // this.post.like_count
-                })
-                .catch(error => console.log(error.response));
-      // this.like = !this.like;
+          .then(response=> {
+            let data = response.data;
+            let user_token = window.localStorage.getItem('token');
+            let group_pk = window.localStorage.getItem('this_group');
+            this.$http.get('https://api.thekym.com/post/?group=' + `${group_pk}`,
+              { headers: {'Authorization' : `Token ${user_token}`} })
+              .then(response=> {
+                let data = response.data.results;
+                let post_data = []
+                data.forEach(item => {
+                  post_data.push(item);
+                });
+                this.$parent.post_data = post_data;
+              })
+          })
+          .catch(error => console.log(error.response));
     },
     deleteComment(pk,ppk){
-      // console.log(pk);
-      // console.log(ppk);
       let post = {
         post: ppk
       }
       let user_token = window.localStorage.getItem('token');
-      this.$http.delete('https://api.thekym.com/post/comment/' + `${pk}` + '/',
-      { headers: {'Authorization' : `Token ${user_token}`}})
-      .then(response => {
-        this.$http.get('https://api.thekym.com/post/comment/', post,
-        { headers: {'Authorization' : `Token ${user_token}`}})
-        .then(response=> {
-          this.comment_data = response.data.results;
-            // console.log('this.comment_data:',this.comment_data);
-            console.log('comment::',response);
-          })
-          .catch(error => console.log('get-error:',error.response));
-        console.log(response);
-        })
-      .catch(error => console.log('delete-error:',error.response));
+      let user_nickname = window.localStorage.getItem('user_nickname');
+      let confirmCommentDelete = confirm(`${user_nickname}` + '님, 정말 이 댓글을 삭제하시겠습니까?');
+      if ( confirmCommentDelete === true ){
+        this.$http.delete('https://api.thekym.com/post/comment/' + `${pk}` + '/',
+          { headers: {'Authorization' : `Token ${user_token}`}})
+          .then(response => {
+            this.$http.get('https://api.thekym.com/post/comment/?post=' + `${ppk}`,
+            { headers: {'Authorization' : `Token ${user_token}`}})
+            .then(response=> {
+              this.comment_count = response.data.count;
+              this.comment_data = response.data.results;
+              // console.log('comment::',response);
+            })
+            // console.log(response);
+            })
+          .catch(error => {
+            if (error.response.status === 403){
+              alert('작성자만 요청할 수 있는 작업입니다.');
+            }
+            console.log('delete-error:',error.response);
+          });
+      }
     },
   }
 }

@@ -72,7 +72,7 @@ export default {
       { headers: {'Authorization' : `Token ${user_token}`}})
                 .then(response => {
                   this.user = response.data;
-                  // console.log(this.user.profile_img);
+                  // console.log(this.user);
                   window.localStorage.setItem('user_img', this.user.profile_img);
                   window.localStorage.setItem('user_email', this.user.email);
                   window.localStorage.setItem('user_nickname', this.user.nickname);

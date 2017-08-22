@@ -14,8 +14,8 @@
                     img(:src="group.profile_img" alt='Image')
                 .card-content
                   .media
-                    .media-content.has-text-centered
-                      p.title.is-4 {{ group.name }}
+                    .media-content.has-text-centered.ellipsis-wrapper
+                      p.title.is-4.ellipsis {{ group.name }}
 
               
           .column.is-3
@@ -44,20 +44,12 @@
 
 <script>
 import MakingGroupModal from '../Group/MakingGroupModal';
-// let group_list_url = 'https://bond-43bc3.firebaseio.com/group.json';
-// let group_list_url = 'http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/';
 export default {
   components: {
     MakingGroupModal
   },
   created() {
     this.getMyGroupList();
-  },
-  mounted(){
-    // this.getMyGroupList();
-  },
-  updated(){
-    // this.getMyGroupList();
   },
   data () {
     return {
@@ -100,7 +92,7 @@ export default {
         // 총 페이지 수. 11은 그룹리스트 페이지네이션 기준 값..
         this.pagination.all = Math.ceil(data.count / 11)
         this.$router.push({ path: '/MainPage/', query: { page: `${page_num}` }});
-        console.log(response)
+        // console.log(response)
       })
       .catch(error => {
         console.log(error.message);
@@ -144,7 +136,7 @@ export default {
       // this.$router.push({ path: '/JointGroup/', query: { group: `${pk}` }});
       window.localStorage.setItem('this_group',pk);
       // this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/')
-      console.log(pk);
+      // console.log(pk);
     }
 }}
 </script>
@@ -174,4 +166,12 @@ export default {
   // background: #eee
 .grouplist-wrapper
   flex-wrap: wrap
+
+.ellipsis-wrapper
+  overflow: auto
+
+.ellipsis
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
 </style>

@@ -131,7 +131,7 @@ export default {
         })
                 .then(response => {
                   let data = response.data;
-                  console.log('data::',data);
+                  console.log('cre_date::',data.created_date);
                   this.$parent.post_data.unshift({
                     author: {
                       // email: author.email,

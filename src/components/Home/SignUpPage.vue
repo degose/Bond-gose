@@ -65,7 +65,7 @@
         .mobile-wrapper
           .columns.is-mobile.home-box-wrapper
             .box.column.home-box
-              h1.is-size-4.has-text-centered.title.title.home-heading 회원가입
+              h1.is-size-4.has-text-centered.title.home-heading 회원가입
               form
                 fieldset.field
               .column.is-half.is-offset-one-quarter.nickname
@@ -164,6 +164,7 @@ export default {
 fieldset
   border: 0 none
   margin: 0
+
 .container
   // min-height: 87vh
 .mobile-wrapper

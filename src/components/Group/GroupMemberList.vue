@@ -160,11 +160,11 @@ export default {
                 .catch(error => console.log(error.response));
     },
     deletemembership(){
-          let pk = parseInt(window.localStorage.getItem('this_group'),10);
+          let pk = window.localStorage.getItem('this_group');
           console.log(pk)
           let user_token = window.localStorage.getItem('token');
           console.log(user_token)
-          this.$http.delete('https://api.thekym.com/member/membership/',{group:pk},
+          this.$http.get('https://api.thekym.com/member/membership/',{group:pk},
                   { headers: {'Authorization' : `Token ${user_token}`}},
                   )
                   .then(response => {
