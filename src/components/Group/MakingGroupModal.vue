@@ -42,7 +42,7 @@
         hr
         .field
           .control
-            input.input.group-name-input(type='text' v-model="group.name" placeholder='그룹 이름을 설정해주세요')
+            input.input.group-name-input(type='text' v-model="group.name" placeholder='그룹 이름을 설정해주세요' maxlength=20)
             textarea.textarea(rows='3' type="text" v-model="group.description" placeholder="그룹에 소개글을 적어주세요" maxlength=40)
 
       footer.modal-card-foot
@@ -77,15 +77,6 @@ export default {
       }
     }
   },
-  watch: {
-    // $route(newVal, oldVal) {
-    //   newVal.query.group_list !== oldVal.query.group_list && this.getMyGroupList();
-    // },
-    $route(newVal, oldVal) {
-      newVal.query.group_list !== oldVal.query.group_list && this.getMyGroupList();
-    },
-    // createGroup()
-  },
   methods: {
     closeModal(){
       this.visible = false;
@@ -119,8 +110,12 @@ export default {
 
       formData.append('name', this.group.name);
       formData.append('description', this.group.description);
-      formData.append('profile_img', this.$refs.file_input.files[0]);
-
+      if( !!this.$refs.file_input.files[0] ){
+        formData.append('profile_img', this.$refs.file_input.files[0]);
+      }
+      // for (var pair of formData.entries()) {
+      //   console.log(pair[0]+ ', ' + pair[1]); 
+      // }
       this.$http.post(
         this.$store.state.api_grouplist, 
         formData,
@@ -136,16 +131,32 @@ export default {
         let name = data.name;
         let description = data.description;
         let profile_img = data.profile_img;
-        this.$parent.group_list.unshift({
-          description: description,
-          group_type: 'PUBLIC',
-          name: name,
-          num_of_members: 1,
-          owner:{},
-          // pk: '',
-          profile_img: profile_img,
-          tags: [],
-        });
+        // console.log('data',data);
+        // console.log('response',response);
+        if(this.$parent.group_list.length >= 11){
+          this.$parent.group_list.splice(0,1,{
+            description: description,
+            group_type: 'PUBLIC',
+            name: name,
+            num_of_members: 1,
+            owner:{},
+            pk: data.pk,
+            profile_img: profile_img,
+            tags: [],
+          });
+        }
+        else {
+          this.$parent.group_list.unshift({
+            description: description,
+            group_type: 'PUBLIC',
+            name: name,
+            num_of_members: 1,
+            owner:{},
+            pk: data.pk,
+            profile_img: profile_img,
+            tags: [],
+          });
+        }
         // console.log(profile_img);
         this.visible = false;
         // getMyGroupList();
@@ -169,7 +180,7 @@ export default {
   width: 100%
   height: 320px
   overflow: hidden
-  background: url('../../assets/640x320_2.png')
+  background: url('../../assets/no-group.png')
   // background-position: center
 
 .group-name-input

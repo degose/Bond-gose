@@ -13,12 +13,12 @@
                 p.title.is-4 {{ group_data.name }}
                 div
                   span 멤버 {{ group_data.num_of_members }}
-                  |  · 
-                  a(aria-label="open leave group modal" @click.prevent="deletegroup") 
-                    span.icon.is-small
-                      i.fa.fa-cog(aria-hidden='true')
-                    | 그룹 삭제
-                  a(aria-label="open leave group modal" @click.prevent="deletemembership") 
+                  | &nbsp; ·&nbsp;
+                  //- a(aria-label="open leave group modal" @click.prevent="deletegroup") 
+                  //-   span.icon.is-small
+                  //-     i.fa.fa-cog(aria-hidden='true')
+                  //-   | 그룹 삭제
+                  a(aria-label="open leave group modal" @click.prevent="openLeaveGroupModal") 
                     span.icon.is-small
                       i.fa.fa-cog(aria-hidden='true')
                     | 그룹 탈퇴
@@ -54,10 +54,10 @@
                     th
                     
 
-                    th 정렬
-                      a
-                        span.icon
-                          i.fa.fa-angle-down
+                    th 
+                    //-   a
+                    //-     span.icon
+                    //-       i.fa.fa-angle-down
 
                 tbody
                   tr
@@ -70,46 +70,46 @@
                     
                     td
                       span.tag.is-rounded.is-primary 리더
-                  tr
-                    //- th 1
-                    td
-                      figure.image.is-48x48.img-user
-                        img.user-img(src='http://bulma.io/images/placeholders/96x96.png', alt='Image')
-                    td 
-                      p.namelist 만순이
+                  //- tr
+                  //-   //- th 1
+                  //-   td
+                  //-     figure.image.is-48x48.img-user
+                  //-       img.user-img(src='http://bulma.io/images/placeholders/96x96.png', alt='Image')
+                  //-   td 
+                  //-     p.namelist 만순이
                     
-                    td
-                      span.tag.is-rounded.is-primary 리더
-                  tr
-                    //- th 1
-                    td
-                      figure.image.is-48x48.img-user
-                        img.user-img(src='http://bulma.io/images/placeholders/96x96.png', alt='Image')
-                    td 
-                      p.namelist 만순이
+                  //-   td
+                  //-     span.tag.is-rounded.is-primary 리더
+                  //- tr
+                  //-   //- th 1
+                  //-   td
+                  //-     figure.image.is-48x48.img-user
+                  //-       img.user-img(src='http://bulma.io/images/placeholders/96x96.png', alt='Image')
+                  //-   td 
+                  //-     p.namelist 만순이
                     
-                    td
-                      span.tag.is-rounded.is-primary 리더
-                  tr
-                    //- th 1
-                    td
-                      figure.image.is-48x48.img-user
-                        img.user-img(src='http://bulma.io/images/placeholders/96x96.png', alt='Image')
-                    td 
-                      p.namelist 만순이
+                  //-   td
+                  //-     span.tag.is-rounded.is-primary 리더
+                  //- tr
+                  //-   //- th 1
+                  //-   td
+                  //-     figure.image.is-48x48.img-user
+                  //-       img.user-img(src='http://bulma.io/images/placeholders/96x96.png', alt='Image')
+                  //-   td 
+                  //-     p.namelist 만순이
                     
-                    td
-                      span.tag.is-rounded.is-primary 리더
-                  tr
-                    //- th 1
-                    td
-                      figure.image.is-48x48.img-user
-                        img.user-img(src='http://bulma.io/images/placeholders/96x96.png', alt='Image')
-                    td 
-                      p.namelist 만순이
+                  //-   td
+                  //-     span.tag.is-rounded.is-primary 리더
+                  //- tr
+                  //-   //- th 1
+                  //-   td
+                  //-     figure.image.is-48x48.img-user
+                  //-       img.user-img(src='http://bulma.io/images/placeholders/96x96.png', alt='Image')
+                  //-   td 
+                  //-     p.namelist 만순이
                     
-                    td
-                      span.tag.is-rounded.is-primary 리더
+                  //-   td
+                  //-     span.tag.is-rounded.is-primary 리더
           invitation-modal(
             ref="my_modal"
             close_message="close lightbox"
@@ -137,7 +137,7 @@ export default {
     return{
       visible: false,
       group_data:[],
-
+      pk:''
     }
   },  
   methods: {
@@ -150,7 +150,7 @@ export default {
     fetchGroupData(){
       let user_token = window.localStorage.getItem('token');
       let pk = window.localStorage.getItem('this_group');
-      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/' + `${pk}`+ '/',
+      this.$http.get('https://api.thekym.com/group/' + `${pk}`+ '/',
        { headers: {'Authorization' : `Token ${user_token}`}})
                 .then(response=> {
                   this.group_data = response.data;
@@ -158,6 +158,24 @@ export default {
                   // console.log('response:',response);
                 })
                 .catch(error => console.log(error.response));
+    },
+    deletemembership(){
+          let pk = window.localStorage.getItem('this_group');
+          console.log(pk)
+          let user_token = window.localStorage.getItem('token');
+          console.log(user_token)
+          this.$http.get('https://api.thekym.com/member/membership/',{group:pk},
+                  { headers: {'Authorization' : `Token ${user_token}`}},
+                  )
+                  .then(response => {
+                    console.log(response)
+                    // this.$router.push({ path: '/NoneJointGroupFeed/', query: { group: `${pk}` }});
+                  })
+                  .catch(error =>{
+                    console.error(error.response)
+                    if(error.response.status === 401)
+                    alert(error.response.data.detail)
+                  })
     },
   }
 }
@@ -167,6 +185,16 @@ export default {
 @import "~bulma"
 @import "~style"
 
+.group_profile-wrapper
+  width: auto
+  height: auto
+  min-height: 100px
+  max-height: 135px
+  overflow: hidden
+.group_profile_img
+  background: url('http://bulma.io/images/placeholders/1280x960.png')
+  // overflow: hidden
+
 body
   background: #eee
 
@@ -174,7 +202,8 @@ body
   min-height: 87vh
 
 .user-img
-  border-radius: 50%
+  background: #eee
+
 .namelist,
   padding-top: 13px
 .tag.is-rounded

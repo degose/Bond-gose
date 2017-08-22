@@ -4,8 +4,8 @@
       .columns
         .column.is-10.is-offset-1
           .box.fetched-data
-            article.media.fetched-data-item(v-for = "group in group_list")
-              a(@click.prevent ="goGroup(group.pk, $event)")
+            article.media.fetched-data-item(v-for = "(group,i) in group_list")
+              a(@click.prevent ="goGroup(group.pk, i)")
                 .media-left
                   figure.image.is-64x64
                     img(:src='group.profile_img', alt='Image')
@@ -53,8 +53,9 @@ export default {
       page_num: '',
       pagination:{
         next: '', 
-        prev: ''
+        prev: '',
       },
+      is_member: []
     }
   },
   created(){
@@ -64,25 +65,60 @@ export default {
     fetched(direction){
       let path = null;
       let search = null;
-      if ( this.page_num.trim() === '' ) {
+      let user_token = window.localStorage.getItem('token');
+      if ( this.page_num.trim() === '') {
         search = window.localStorage.getItem('searchKeyword');
-        path = 'http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/?search='+`${search}`;
+        path = 'https://api.thekym.com/group/?search='+`${search}`;
       }
-      else {
+      // else if(){
+        
+      // }
+      else{
         path = this.pagination[direction];
-        search = this.page_num;
+        search = this.page_num.trim();
       }
       this.$http
-          .get(path)
+          .get(path, { headers: {'Authorization' : `Token ${user_token}`}})
           .then(response => {
+            console.log(response)
             let data = response.data;
             this.group_list = data.results;
             this.pagination.next = data.next;
             this.pagination.prev = data.previous;
+            for(let i=0;i <response.data.results.length;i++){
+              this.is_member.push(data.results[i].is_member)
+            }
             this.$router.push({ path: '/SearchResult/group/', query: { search: `${search}` }});
           })
           .catch(error => console.error(error.message));
     },
+    //08.22 내일 적용해 볼 코드
+    //첫번째 시도는 this.page_num.trim()에 대한 조건문을 변경해보았다.
+      // fetched(directioin){
+      //   let search = window.localStorage.getItem('searchKeyword');
+      //   let path = 'http://api.thekym.com/group/?search='+`${search}`;
+      //   let user_token = window.localStorage.getItem('token');
+      //   if(this.page_num.trim() !== ''){
+      //     //여기서 search는 꼭 필요한 건가?
+      //     search = this.page_num.trim();
+      //     path = this.pagination[direction];
+      //   }
+      //   this.$http
+      //         .get(path, { headers: {'Authorization' : `Token ${user_token}`}})
+      //         .then(response => {
+      //           console.log(response)
+      //           let data = response.data;
+      //           this.group_list = data.results;
+      //           this.pagination.next = data.next;
+      //           this.pagination.prev = data.previous;
+      //           //이건 무슨 코드지?
+      //           for(let i=0; i<response.data.results.length; i++){
+      //             this.is_member.push(data.results[i].is_member)
+      //           }
+      //           this.$router.push({path: '/SearchResult/group/', query: {search: `${search}`}});
+      //         })
+      //         .catch(error => console.error(error.message));
+      // },
     nextPage(){
       let api_path = this.pagination.next;
       if (api_path !== null) {
@@ -120,9 +156,17 @@ export default {
          this.fetched('prev');
       }
     },
-    goGroup(pk, e){
-      this.$router.push({ path: '/NoneJointGroupFeed/', query: { group: `${pk}` }});
+    goGroup(pk, i){
       window.localStorage.setItem('this_group',pk);
+      if(this.is_member[i] === true){
+        console.log("pk값이 있다")
+        console.log(this.is_member[i])
+        this.$router.push({ path: '/JointGroup/', query: { group: `${pk}` }});
+      }
+      else{
+        console.log("pk값이 없다")
+        this.$router.push({ path: '/NoneJointGroupFeed/', query: { group: `${pk}` }});
+      }
       console.log(pk);
     },
   },

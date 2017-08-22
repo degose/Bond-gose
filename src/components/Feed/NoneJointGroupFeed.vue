@@ -52,40 +52,40 @@
 
                 
                 //- 좋아요, 댓글 개수
-                footer.card-footer
-                  button(type="submit" @click="addLike(post.pk)").card-footer-item.btn-show-like
-                    span.icon-like
-                      i.fa.fa-heart-o(v-show="!like")
-                      i.fa.fa-heart(v-show="like")
-                    | &nbsp;  
-                    | {{ post.like_count }}
-                  button(@click="showComment($event)").card-footer-item.btn-show-comment
-                    | 댓글
-                    | {{ post.comment_count }}
-                    | &nbsp; 
-                    span.icon.is-small(v-show="!showcomment")
-                      i.fa.fa-angle-down(aria-hidden='true')
-                    span.icon.is-small(v-show="showcomment")
-                      i.fa.fa-angle-up(aria-hidden='true')
+                //- footer.card-footer
+                //-   button(type="submit" @click="addLike(post.pk)").card-footer-item.btn-show-like
+                //-     span.icon-like
+                //-       i.fa.fa-heart-o(v-show="!like")
+                //-       i.fa.fa-heart(v-show="like")
+                //-     | &nbsp;  
+                //-     | {{ post.like_count }}
+                //-   button(@click="showComment($event)").card-footer-item.btn-show-comment
+                //-     | 댓글
+                //-     | {{ post.comment_count }}
+                //-     | &nbsp; 
+                //-     span.icon.is-small(v-show="!showcomment")
+                //-       i.fa.fa-angle-down(aria-hidden='true')
+                //-     span.icon.is-small(v-show="showcomment")
+                //-       i.fa.fa-angle-up(aria-hidden='true')
                       
 
               //- 댓글 영역
-              .card(v-if="comment")
-                .card-content
-                  //- 댓글 리스트 영역
-                  article.media(v-show="showcomment" v-for="comment in comment_data" ref="togglecomment")
-                    figure.media-left
-                      p.image.is-48x48
-                        img.user-img(:src='comment.author.profile_img')
-                    .media-content
-                      .content
-                        p
-                          strong {{ comment.author.nickname }}
-                          br
-                          | {{ comment.content }}
-                          br
-                          small
-                            | {{ comment.created_date }}
+              //- .card(v-if="comment")
+              //-   .card-content
+              //-     //- 댓글 리스트 영역
+              //-     article.media(v-show="showcomment" v-for="comment in comment_data" ref="togglecomment")
+              //-       figure.media-left
+              //-         p.image.is-48x48
+              //-           img.user-img(:src='comment.author.profile_img')
+              //-       .media-content
+              //-         .content
+              //-           p
+              //-             strong {{ comment.author.nickname }}
+              //-             br
+              //-             | {{ comment.content }}
+              //-             br
+              //-             small
+              //-               | {{ comment.created_date }}
     main-footer
                 
 
@@ -121,16 +121,9 @@ export default {
       showcomment: false,
       like: false,
       like_or_not: '',
-      write: {
-        // 텍스트 내용
-        content:'',
-        // 그룹 pk값..임의로 정해둠
-        group: 29
-      },
       group_data:[],
       post_data:[],
       comment_data:[],
-      // target: ''
       pk:'',
     }
   },
@@ -138,12 +131,13 @@ export default {
     jointgroup(){
         let pk = window.localStorage.getItem('this_group')
         let user_token = window.localStorage.getItem('token')
-        this.$http.post('http://bond.ap-northeast-2.elasticbeanstalk.com/api/member/membership/', {group: pk},
+        this.$http.post('https://api.thekym.com/member/membership/', {group: pk},
                   { headers: {'Authorization' : `Token ${user_token}`}})
                   .then(response => {
                     console.log(response)
                     if(response.status === 201){
-                      this.$router.push({path: '/JointGroup/', query: {group: response.data.group}});
+                      this.$router.push({path: '/JointGroup/'});
+                      // this.$router.push({path: '/JointGroup/', query: {group: response.data.group}});
                     }
                   })
                   .catch(error =>{
@@ -159,7 +153,7 @@ export default {
     fetchGroupData(){
       let user_token = window.localStorage.getItem('token');
       let pk = window.localStorage.getItem('this_group');
-      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/' + `${pk}`+ '/',
+      this.$http.get('https://api.thekym.com/group/' + `${pk}`+ '/',
        { headers: {'Authorization' : `Token ${user_token}`}})
                 .then(response=> {
                   this.group_data = response.data;
@@ -171,7 +165,7 @@ export default {
     fetchPostData(){
       let user_token = window.localStorage.getItem('token');
       let pk = window.localStorage.getItem('this_group');
-      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/?group=' + `${pk}`,
+      this.$http.get('https://api.thekym.com/post/?group=' + `${pk}`,
        { headers: {'Authorization' : `Token ${user_token}`} })
                 .then(response=> {
                   // this.post_data = response.data.results;
@@ -221,7 +215,7 @@ export default {
       console.log('pk:',pk);
       console.log('token:',user_token);
       // /api/post/<pk>/post-like-toggle
-      this.$http.post('http://bond.ap-northeast-2.elasticbeanstalk.com/api/post/' + `${pk}`+ '/post-like-toggle/',
+      this.$http.post('https://api.thekym.com/post/' + `${pk}`+ '/post-like-toggle/',
        { headers: {'Authorization' : `Token ${user_token}`}})
                 .then(response=> {
                   // this.like_or_not = response.like_or_not;

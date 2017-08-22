@@ -14,8 +14,8 @@
                     img(:src="group.profile_img" alt='Image')
                 .card-content
                   .media
-                    .media-content.has-text-centered
-                      p.title.is-4 {{ group.name }}
+                    .media-content.has-text-centered.ellipsis-wrapper
+                      p.title.is-4.ellipsis {{ group.name }}
 
               
           .column.is-3
@@ -31,11 +31,10 @@
                     .media-content.has-text-centered
                       strong.title.is-4.make-group-title 그룹 만들기
                       
-
-        nav.pagination.is-hidden-mobile.is-centered.grouplist-nav
-          a.pagination-previous(title='This is the first page', disabled='') Previous
-          a.pagination-next Next page
-      
+        nav.pagination.is-centered
+          button.pagination-previous.pagination-btn(@click="prevPage()" :disabled='pagination.prev === null') 이전 페이지
+          button.pagination-next.pagination-btn(@click="nextPage()" :disabled='pagination.next === null') 다음 페이지 
+           
       MakingGroupModal(
         ref="my_modal"
         close_message="close lightbox"
@@ -45,8 +44,6 @@
 
 <script>
 import MakingGroupModal from '../Group/MakingGroupModal';
-// let group_list_url = 'https://bond-43bc3.firebaseio.com/group.json';
-// let group_list_url = 'http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/';
 export default {
   components: {
     MakingGroupModal
@@ -54,41 +51,81 @@ export default {
   created() {
     this.getMyGroupList();
   },
-  mounted(){
-    // this.getMyGroupList();
-  },
-  updated(){
-    // this.getMyGroupList();
-  },
   data () {
     return {
       uploadGroupImg: '',
       group_list: [],
       group_pk: '',
-      group: {}
-    };
-  },
-  watch: {
+      group: {},
+      page_num: '',
+      pagination:{
+        next: '', 
+        prev: '',
+        all: ''
+      },
+      my_group_pk:[]
+    }
   },
   methods: {
     openModal(){
       this.$refs.my_modal.visible = true;
     },
-    getMyGroupList(){
+    getMyGroupList(direction){
       let user_token = window.localStorage.getItem('token');
-      
-      this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/my-group/', 
+      let path = null;
+      let page_num = 1;
+      if ( this.page_num.trim() === '' ) {
+        path = "https://api.thekym.com/group/my-group/?page="+`${page_num}`
+      }
+      else {
+        path = this.pagination[direction];
+        page_num = this.page_num;
+      }
+      this.$http.get(path, 
         {headers: { 'Authorization' : `Token ${user_token}` }}
       )
       .then(response => {
-        this.group_list = response.data.results;
-        console.log('group',this.group_list);
-
+        let data = response.data;
+        this.group_list = data.results;
+        this.pagination.next = data.next;
+        this.pagination.prev = data.previous;
+        // 총 페이지 수. 11은 그룹리스트 페이지네이션 기준 값..
+        this.pagination.all = Math.ceil(data.count / 11)
+        this.$router.push({ path: '/MainPage/', query: { page: `${page_num}` }});
+        // console.log(response)
       })
       .catch(error => {
         console.log(error.message);
       })
     },
+    // "http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/my-group/?page=2".slice(73)  => "2"
+    nextPage(){
+      let api_path = this.pagination.next;
+      if (api_path !== null) {
+      // let first = api_path.indexOf('?page=');
+      // let last = api_path.indexOf('&');
+      let page_path = api_path.slice(36);
+      this.page_num = page_path
+      this.getMyGroupList('next');
+      // console.log('작동된다')
+      }
+    },
+    prevPage(){
+      let api_path = this.pagination.prev;
+      // let last = api_path.indexOf('&');
+      // let first = api_path.indexOf('?page=');
+      let page_path = api_path.slice(36);
+      this.page_num = page_path
+
+      if(this.page_num >= 3){
+      let page_path = api_path.slice(36);
+      this.page_num = page_path;
+      this.getMyGroupList('prev');}
+      else{
+         let path = this.pagination.prev
+         this.getMyGroupList('prev');
+      }
+    },    
     goGroup(pk, e){
       // this.$router.push({ path: 'JointGroup', query: { plan: 'private' }});
       // http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/my-group/?group=1
@@ -99,7 +136,7 @@ export default {
       // this.$router.push({ path: '/JointGroup/', query: { group: `${pk}` }});
       window.localStorage.setItem('this_group',pk);
       // this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/')
-      console.log(pk);
+      // console.log(pk);
     }
 }}
 </script>
@@ -108,7 +145,8 @@ export default {
 @import "~bulma"
 @import "~style"
 
-.make-group-title
+.make-group-title,
+.pagination-btn
   color: $bond
 .page-wrapper
   min-height: 87vh
@@ -126,7 +164,14 @@ export default {
   max-height: 135px
   overflow: hidden
   // background: #eee
-
 .grouplist-wrapper
   flex-wrap: wrap
+
+.ellipsis-wrapper
+  overflow: auto
+
+.ellipsis
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
 </style>

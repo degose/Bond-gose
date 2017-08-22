@@ -98,8 +98,8 @@ export default {
         this.file_name = file.name;
         reader.onload = data => {
           this.uploadImg = data.srcElement.result;
-          // this.group.proflie_img = data.srcElement.result;
-          // _this.file_url = reader.result;
+          this.write.image = data.srcElement.result;
+          _this.file_url = reader.result;
         }
       } else { alert('이미지 파일만 선택 가능합니다.')}
       console.log('file:',file);
@@ -114,7 +114,12 @@ export default {
       let user_nickname = window.localStorage.getItem('user_nickname');
 
       formData.append('content', this.write.content);
-      formData.append('image', this.$refs.file_img_input.files[0]);
+      // let img_file = this.$refs.file_img_input.files[0];
+      
+      if(!!this.$refs.file_img_input.files[0] ){
+        formData.append('image', this.$refs.file_img_input.files[0]);
+      }
+      // formData.append('image', this.$refs.file_img_input.files[0]);
       formData.append('group', pk);
       
       this.$http.post(this.$store.state.api_write, formData,
@@ -126,7 +131,7 @@ export default {
         })
                 .then(response => {
                   let data = response.data;
-                  console.log('data::',data);
+                  console.log('cre_date::',data.created_date);
                   this.$parent.post_data.unshift({
                     author: {
                       // email: author.email,
@@ -142,7 +147,8 @@ export default {
                     image: data.image,
                     group: data.group,
                     video: data.video,
-                    content: data.content
+                    content: data.content,
+                    created_date: data.created_date,
                   });
                   // this.$emit('add-post-data', {
                   //   author: {},
@@ -196,5 +202,3 @@ export default {
 
   
 </style>
-
-
