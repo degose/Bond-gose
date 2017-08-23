@@ -5,7 +5,7 @@
         //- 가입한 그룹의 feed
         .columns
           //- 그룹 정보 영역
-          .column.is-3
+          .column.is-3.is-hidden-mobile
             .card-content
               //- 가입하기 버튼
               .columns.is-mobile
@@ -30,13 +30,6 @@
                     | 더보기
           //- feed 영역
           .column.is-9
-            //- div.feed-box(v-show="post_data.length <= 0")
-              .card
-                .card-content
-                  .content
-                    | 그룹에 재미있는 이야기를 써보세요.
-
-
             //- 컨텐츠가 들어간 글
             div.feed-box
               .card(v-for = "data in data_list")
@@ -55,7 +48,7 @@
                         img.user-img(:src='data.author.profile_img', alt='Image')
                     .media-content
                       p.title.is-4.user-name {{data.author.nickname}}
-                      p.subtitle.is-6 11:09 PM - 1 Jan 2016
+                      p.subtitle.is-6 {{ data.created_date }}
 
                   //- 글 (최상위)
                   .content {{data.content}}
@@ -63,7 +56,11 @@
                   .content
                     figure.image
                       img(:src='data.image')
-
+              .columns
+                .column
+                  nav.pagination.is-centered
+                    button.pagination-previous.pagination-btn(@click="prevPage()" :disabled='pagination.prev === null') 이전 페이지
+                    button.pagination-next.pagination-btn(@click="nextPage()" :disabled='pagination.next === null') 다음 페이지  
       main-footer
       MakingGroupModal(ref="my_modal" close_message="close lightbox")
                             
@@ -85,16 +82,54 @@ export default {
   data() {
     return {
       data_list: [],
-      group_list: []
+      group_list: [],
+      page_num: '',
+      pagination:{
+        next: '', 
+        prev: '',
+        all: ''
+      },
     }
   },
   created(){
+    this.fetchGroupData();
+    this.fetchPostData();
     this.openMygroup();
     this.getMyGroupList();
   },
   methods: {
-    openModal(){
-      this.$refs.my_modal.visible = true;
+    fetchGroupData(){
+      let user_token = window.localStorage.getItem('token');
+      let pk = window.localStorage.getItem('this_group');
+      this.$http.get('https://api.thekym.com/group/' + `${pk}`+ '/',
+       { headers: {'Authorization' : `Token ${user_token}`}})
+                .then(response=> {
+                  this.group_data = response.data;
+                })
+                .catch(error => console.log(error.response));
+    },
+    fetchPostData(){
+      let user_token = window.localStorage.getItem('token');
+      let pk = window.localStorage.getItem('this_group');
+      this.$http.get('https://api.thekym.com/post/?group=' + `${pk}`,
+       { headers: {'Authorization' : `Token ${user_token}`} })
+                .then(response=> {
+                  let data = response.data;
+                  data.results.forEach(item => {
+                    this.post_data.push(item);
+                  });
+                })
+                .catch(error => console.log(error.response));
+    },
+    openMygroup(){
+        let user_token = window.localStorage.getItem('token');
+        this.$http.get('https://api.thekym.com/post/my-group/',
+          {headers: {'Authorization' : `Token ${user_token}` }})
+                  .then(response => {
+                    let data = response.data;
+                    this.data_list = data.results;
+                  })
+                  .catch(error => console.error(error.response))
     },
     getMyGroupList(){
           let user_token = window.localStorage.getItem('token');
@@ -109,15 +144,49 @@ export default {
             console.log(error.message);
           })
     },
-    openMygroup(){
+    openMygroup(direction){
         let user_token = window.localStorage.getItem('token');
-        this.$http.get('https://api.thekym.com/post/my-group/',
+        let path = null;
+        let page_num = 1;
+        if (this.page_num.trim() === ''){
+          path = 'https://api.thekym.com/post/my-group/'
+      }
+        else  {
+        path = this.pagination[direction];
+        page_num = this.page_num;
+      }
+        this.$http.get(path,
           {headers: {'Authorization' : `Token ${user_token}` }})
                   .then(response => {
                     let data = response.data;
                     this.data_list = data.results;
+                    this.pagination.next = response.data.next;
+                    this.pagination.prev = response.data.previous;
+                    this.$router.push({ path: '/MyGroupFeed', query: { page: `${page_num}` }});
                   })
                   .catch(error => console.error(error.response))
+    },
+    openModal(){
+      this.$refs.my_modal.visible = true;
+    },
+    nextPage(){
+      let api_path = this.pagination.next;
+      if (api_path !== null) {
+      let page_path = api_path.slice(-1);
+      this.page_num = page_path
+      this.openMygroup('next');
+      }
+    },
+    prevPage(){
+      let api_path = this.pagination.prev;
+      if(this.page_num >= 3){
+      let page_path = api_path.slice(-1);
+      this.page_num = page_path;
+      this.openMygroup('prev');}
+      else{
+         let path = this.pagination.prev
+         this.openMygroup('prev');
+      }
     },
     goGroup(pk){
         window.localStorage.setItem('this_group', pk);
@@ -127,16 +196,12 @@ export default {
 }
 </script>
 
-
 <style lang="sass" scoped>
 @import "~bulma"
 @import "~style"
 
 .all-wrapper
   background: #eee
-body
-  // background: #eee
-
 .icon-more
   font-size: 1.5rem
   color: $grey
@@ -148,8 +213,6 @@ body
     color: $bond
 .card
   margin-bottom: 20px
-
-
 
 .dropdownhr
   margin: 5px
@@ -177,4 +240,6 @@ body
   font-size: 1rem
   margin-top: 1px
 
+.pagination-btn
+  color: $bond
 </style>
