@@ -1,6 +1,5 @@
 <template lang="pug">
   div(v-cloak)
-    //- background
     .container
       header.header
         .columns.is-centered.is-mobile
@@ -30,10 +29,7 @@
                     span.icon.is-small.is-right
                       i.fa.fa-check
                 .control.column.is-half.is-offset-one-quarter
-                  //- router-link(to='/MainPage', active-class='current-page')
                   button.column.btn-fill.btn-login(type="button" @click="signinSubmit") 로그인
-                  //- router-link(to='/MainPage', active-class='current-page')
-                  //-   button.column.btn-fill.btn-login(type="submit") 로그인
             
             .field
               .control.column.is-half.is-offset-one-quarter.has-text-centered
@@ -62,10 +58,7 @@
                       span.icon.is-small.is-right
                         i.fa.fa-check
                   .control.column.is-half.is-offset-one-quarter
-                    //- router-link(to='/MainPage', active-class='current-page')
                     button.column.btn-fill.btn-login(type="button" @click="signinSubmit") 로그인
-                    //- router-link(to='/MainPage', active-class='current-page')
-                    //-   button.column.btn-fill.btn-login(type="submit") 로그인
               
               .field
                 .control.column.is-half.is-offset-one-quarter.has-text-centered
@@ -98,8 +91,6 @@ export default {
           window.localStorage.setItem('token', token);
           window.localStorage.setItem('pk', pk);
         }
-        console.log('success token:', window.localStorage.getItem('token'));
-        console.log('success pk:', window.localStorage.getItem('pk'));
         this.$router.push( {path: '/MainPage'} );
       })
       .catch(error => {
@@ -111,6 +102,8 @@ export default {
         else alert(error.response.data.non_field_errors[0]);
         console.log(error.response);
       })
+      const loadingComponent = this.$loading.open()
+      setTimeout(() => loadingComponent.close(), 4 * 1000)
     }
   }
 }

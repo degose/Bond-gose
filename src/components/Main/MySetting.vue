@@ -38,8 +38,6 @@
               p.control
                 input.input(type='text', :placeholder='user.nickname', v-model="userinput.nickname" )
               p.control
-                //- button.button(type="submit")
-                //-   | 변경
       footer.modal-card-foot
         button.button.is-primary(type="submit" @click="submitSetting") 설정 변경
         button.button(@click="closeModal") 취소
@@ -65,12 +63,7 @@ export default {
     return {
       visible: this.is_visible,
       uploadMyImg: '',
-      user:{
-        // pk:'',
-        // email:'',
-        // nickname:'',
-        // username:'',
-      },
+      user:{},
       userinput: {
         profile_img: '',
         nickname:''
@@ -103,7 +96,6 @@ export default {
           _this.file_url = reader.result;
         }
       } else { alert('이미지 파일만 선택 가능합니다.')}
-      // console.log('file:',file);
     },
     submitSetting(){
 
@@ -117,9 +109,6 @@ export default {
       if(!!this.$refs.file_input.files[0]){
         formData.append('profile_img', this.$refs.file_input.files[0]);
       }
-
-      // console.log('profile_img:',this.$refs.file_input.files[0])
-
       this.$http.patch(
         'https://api.thekym.com/member/' + `${pk}` + '/', 
         formData,
@@ -142,7 +131,7 @@ export default {
         if(this.userinput.nickname === ''){
           alert('닉네임 <- ' + error.response.data.nickname[0])
         }
-        else alert("음... 알 수 없네요.. 무슨일이죠?")
+        // else alert('')
         console.error(error.response)
       });
       this.userinput = '';
@@ -156,8 +145,6 @@ export default {
       { headers: {'Authorization' : `Token ${user_token}`}})
                 .then(response => {
                   this.user = response.data;
-                  // console.log('user.pk:',pk);
-                  // console.log('data:',this.user);
                   })
                 .catch(error => console.log(error.response));
     }

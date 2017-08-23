@@ -6,7 +6,6 @@
           
           //- 그룹 정보 영역
           .column.is-3(v-for="group in group_list")
-            //- router-link(to="/JointGroup")
             a(@click.prevent="goGroup(group.pk, $event)")
               .card
                 .card-image
@@ -23,7 +22,6 @@
               a(@click="openModal")
                 .card-image.makegroup
                   figure.image.is-desktop-16by9.is-mobile-1by1.is-tablet-2by1.img-grouplist-wrapper.is-hidden-mobile
-                      //- img(src='../../assets/group-add-hoverx2-mobile.png', alt='Image').is-hidden-desktop.is-hidden-tablet
                       img(src='../../assets/group-add-hoverx2-tablet.png', alt='Image').is-hidden-tablet.is-hidden-mobile
                       img(src='../../assets/group-add-hoverx2.png', alt='Image').is-hidden-mobile
                 .card-content
@@ -127,16 +125,9 @@ export default {
       }
     },    
     goGroup(pk, e){
-      // this.$router.push({ path: 'JointGroup', query: { plan: 'private' }});
-      // http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/my-group/?group=1
-      // let group_pk = 'http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/' + `${pk}`;
-      // this.$router.push('/JointGroup/?group=${}');
-      // this.$router.push({path: '/JointGroup', params: {id: pk}});
       this.$router.push({ path: '/JointGroup/'});
       // this.$router.push({ path: '/JointGroup/', query: { group: `${pk}` }});
       window.localStorage.setItem('this_group',pk);
-      // this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/')
-      // console.log(pk);
     }
 }}
 </script>
@@ -165,6 +156,7 @@ export default {
   overflow: hidden
   // background: #eee
 .grouplist-wrapper
+  min-height: 75vh
   flex-wrap: wrap
 
 .ellipsis-wrapper

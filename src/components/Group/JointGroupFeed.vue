@@ -41,10 +41,10 @@
                         i.fa.fa-picture-o
                     a(aria-label="open write modal" @click="openWriteModal").card-footer-item
                       span.icon
-                        i.fa.fa-play-circle-o
+                        i.fa.fa-play-circle-o.disabled-ico
                     a(aria-label="open write modal" @click="openWriteModal").card-footer-item
                       span.icon
-                        i.fa.fa-folder-open-o
+                        i.fa.fa-folder-open-o.disabled-ico
                     a(aria-label="open write modal" @click="openWriteModal").card-footer-item
                       span.icon
                         i.fa.fa-pencil
@@ -58,7 +58,6 @@
                   .content
                     | 그룹에 재미있는 이야기를 써보세요.
 
-            //- div.feed-box(@add-post-data="addPostData" v-for="(post, i) in post_data")
             div.feed-box(v-for="(post, i) in post_data")
               post-template(:post = "post")
 
@@ -79,9 +78,7 @@
 </template>
 
 <script>
-// import {bus} from './bus'
 import WriteModal from './WriteModal';
-// import LeaveGroupModal from './LeaveGroupModal';
 import PostTemplate from './PostTemplate';
 import DeleteGroupModal from './DeleteGroupModal';
 
@@ -89,12 +86,6 @@ export default {
   created(){
     this.fetchGroupData();
     this.fetchPostData();
-    // this.fetchCommentData();
-    // bus.$on('add-post-data')
-    // this.deletePost();
-  },
-  watch: {
-    // deletePost(){}
   },
   data() {
     return {
@@ -133,8 +124,6 @@ export default {
        { headers: {'Authorization' : `Token ${user_token}`}})
                 .then(response=> {
                   this.group_data = response.data;
-                  // console.log('this.group_datalist:',this.group_data);
-                  // console.log('response:',response);
                 })
                 .catch(error => console.log(error.response));
     },
@@ -153,24 +142,14 @@ export default {
       this.$http.get(path,
        { headers: {'Authorization' : `Token ${user_token}`} })
                 .then(response=> {
-                  // this.post_data = response.data.results;
                   let data = response.data.results;
-                  // console.log('like',response);
                   data.forEach(item => {
                     this.post_data.push(item);
                   });
-                  // console.log('postdata',data);
                   this.pagination.next = response.data.next;
                   this.pagination.prev = response.data.previous;
                   this.$router.push({ path: '/JointGroup/', query: { page: `${page_num}` }});
-                  // console.log(response)                  
-                  // console.log('this.post_data:',this.post_data);
                 })
-                // .then(write => {const datalist = Object.values(write);
-                // this.datalist = datalist;
-                // })
-                // 
-                // .then(data => console.log(data))
                 .catch(error => console.log(error.response));
     },
     nextPage(){
@@ -250,4 +229,6 @@ body
   color: $bond
 .pagination-wrapper
   padding-bottom: 20px
+.disabled-ico
+  color: #666
 </style>

@@ -1,6 +1,5 @@
 <template lang="pug">
   div(v-cloak)
-    //- background
     .container
       header.header
         .columns.is-centered.is-mobile
@@ -53,10 +52,9 @@
 
             .field.column.is-grouped.is-grouped-centered
               .control
-                //- router-link(to='/#/Login', active-class='current-page')
                 button.button.is-primary(type="button" @click="signupSubmit") 가입하기
               .control
-                router-link(to='/#', active-class='current-page')
+                router-link(to='/', active-class='current-page')
                   button.button.is-link.is-right Cancel
 
 
@@ -101,10 +99,9 @@
 
               .field.column.is-grouped.is-grouped-centered
                 .control
-                  //- router-link(to='/#/Login', active-class='current-page')
                   button.button.is-primary(type="button" @click="signupSubmit") 가입하기
                 .control
-                  router-link(to='/#', active-class='current-page')
+                  router-link(to='/', active-class='current-page')
                     button.button.is-link.is-right Cancel
 
 
@@ -132,7 +129,7 @@ export default {
     signupSubmit(){
       this.$http.post(this.$store.state.api_signup, this.signup)
                 .then(response => {
-                  console.log(response);
+                  // console.log(response);
                   this.$router.push( {path: '/SignInPage'} );
                   })
                 .catch(error => {

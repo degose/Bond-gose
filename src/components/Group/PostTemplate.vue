@@ -1,37 +1,19 @@
 <template lang="pug">
               div()
-                .card()
+                .card
                   .card-content
                     article.media
                       .media-left
                         figure.image.is-64x64.img-user
-                          img.user-img(:src='post.author.profile_img', alt='Image')
+                          img.img-user-profile(:src='post.author.profile_img', alt='Image')
                       .media-content
                         p.title.is-4.user-name {{ post.author.nickname }}
                         p.subtitle.is-6 {{ post.created_date }}
                       //- post삭제
-                      //- button.delete(@click="openDeletePostModal(post.pk)")
                       button.delete(@click="deletePost(post.pk)")
 
 
 
-                      //- 드롭다운 버튼
-                      //- .dropdown.is-right.is-active
-                        .dropdown-trigger
-                          button(aria-haspopup='true', aria-controls='dropdown-menu3' @click="openDropdownPost($event)")
-                            span.icon
-                              i.icon-more.ion-android-more-vertical(aria-hidden='true')
-
-                        //- #dropdown-menu3.dropdown-menu(role='menu' :class="post.pk")
-                        #dropdown-menu3.dropdown-menu(role='menu' v-show="dropdownpost" :class='post.pk' ref="dropdownpostref")
-                          .dropdown-content
-                            ul
-                              li
-                                a.dropdown-item(href='#')
-                                  | 글 수정
-                              li
-                                a.dropdown-item(href='#')
-                                  | 글 삭제
 
                     //- 글 (최상위)
                     .content
@@ -44,29 +26,6 @@
                         img(:src='post.image')
 
 
-                    //- 동영상
-                    //- .content(v-if=' -1 > 0')s
-                      figure
-                        video.responsive-svg(controls='', poster='http://bulma.io/images/placeholders/480x320.png', preload='none', width='640', height='360')
-                          source(src='../../assets/KakaoTalk_2017-08-02-19-43-12_Video_36.mp4', type='video/webm; codecs="vp8, vorbis"')
-                          track(src='', kind='captions', srclang='en', label='English captions', default='')
-
-
-
-                    //- 첨부파일
-                    //- .content(v-if=' -1 > 0')
-                      .file-box
-                        a(href='#')
-                          .columns.is-mobile
-                            .column.is-1
-                              span
-                                i.fa.fa-folder-open-o
-                            .column 
-                              span
-                                p README.md
-                            .column.is-1
-                              span
-                                i.fa.fa-arrow-down
                   
                   
                   //- 좋아요, 댓글 개수
@@ -148,7 +107,6 @@ export default {
       post_data:[],
       comment_count: null,
       comment_data:[],
-      // pk:'',
       page_num: '',
       pagination:{
         next: '', 
@@ -215,16 +173,12 @@ export default {
                 .then(response=> {
                   this.comment_count = response.data.count;
                   this.comment_data = response.data.results;
-                  // console.log('this.comment_data:',this.comment_data);
-                  // console.log('comment::',response);
                   this.showcomment = !this.showcomment;
                 })
                 .catch(error => console.log(error.response));
     },
     addLike(pk) {
       let user_token = window.localStorage.getItem('token');
-      // console.log('pk:',pk);
-      // console.log('token:',user_token);
       this.$http.post('https://api.thekym.com/post/' + `${pk}`+ '/post-like-toggle/', true,
        { headers: {'Authorization' : `Token ${user_token}`}})
           .then(response=> {
@@ -260,9 +214,7 @@ export default {
             .then(response=> {
               this.comment_count = response.data.count;
               this.comment_data = response.data.results;
-              // console.log('comment::',response);
             })
-            // console.log(response);
             })
           .catch(error => {
             if (error.response.status === 403){
@@ -291,6 +243,18 @@ export default {
 .group_profile_img
   background: url('http://bulma.io/images/placeholders/1280x960.png')
   // overflow: hidden
+
+.img-user
+  background: #eee
+  width: 64px
+  height: 64px
+  overflow: hidden
+  border-radius: 50%
+
+.img-user-profile
+  height: 100%
+  width: 100%
+
 .user-img
   background: #eee
 
