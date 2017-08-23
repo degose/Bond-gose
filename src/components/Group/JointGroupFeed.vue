@@ -7,7 +7,7 @@
             .card
               .card-image
                 figure.image.group_profile-wrapper.is-desktop-16by9.is-mobile-1by1.is-tablet-2by1
-                  img.group_profile_img(:src='group_data.profile_img', alt='Image')
+                  img(:src='group_data.profile_img', alt='Image')
               .card-content
                 article.media
                   .media-content
@@ -197,9 +197,6 @@ export default {
   max-height: 135px
   overflow: hidden
 
-.group_profile_img
-  background: url('http://bulma.io/images/placeholders/1280x960.png')
-  // overflow: hidden
 .user-img
   background: #eee
 

@@ -70,8 +70,8 @@
                     //- 댓글 리스트 영역
                     article.media(v-for="comment in comment_data" v-show="showcomment")
                       figure.media-left
-                        p.image.is-48x48
-                          img.user-img(:src='comment.author.profile_img')
+                        p.image.is-48x48.img-user-48
+                          img.img-user-profile(:src='comment.author.profile_img')
                       .media-content
                         .content
                           p
@@ -246,9 +246,16 @@ export default {
   overflow: hidden
   border-radius: 50%
 
+.img-user-48
+  background: #eee
+  width: 48px
+  height: 48px
+  overflow: hidden
+  border-radius: 50%
+
 .img-user-profile
   height: 100%
-  width: 100%
+  // width: 100%
 
 .user-img
   background: #eee

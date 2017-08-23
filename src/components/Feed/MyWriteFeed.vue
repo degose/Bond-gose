@@ -18,7 +18,7 @@
               a.columns.is-mobile.group-small-list-group(@click="goGroup(group.pk)")
                 article.media.group-small-list
                   figure.media-left
-                    p.image.is-32x32
+                    p.image.is-32x32.group-img-small-wrapper
                       img.group-img-small(:src='group.profile_img')
                 p.group-small-name {{group.name}}
             .card-content
@@ -31,44 +31,45 @@
 
           //- feed 영역
           .column.is-9
-            //- div.feed-box(v-show="post_data.length <= 0")
-              .card
-                .card-content
-                  .content
-                    | 그룹에 재미있는 이야기를 써보세요.
+            .feed-box-wrapper
+              div.feed-box(v-show="data_list.length <= 0")
+                .card
+                  .card-content
+                    .content
+                      | 그룹에 재미있는 이야기를 써보세요.
 
 
-            //- 컨텐츠가 들어간 글
-            div.feed-box
-              .card(v-for = "data in data_list")
-                header.card-header
-                  a.card-header-title.group-name(@click.prevent ="goGroup(data.group.pk)") 
-                    | &nbsp;  
-                    | &nbsp;  
-                    span.icon.icon-bond
-                      img(src="../../assets/btn-bond-normal.svg")
-                    | &nbsp;  
-                    | {{data.group.name}}
-                .card-content
-                  article.media
-                    .media-left
-                      figure.image.is-64x64.img-user
-                        img.user-img(:src='data.author.profile_img', alt='Image')
-                    .media-content
-                      p.title.is-4.user-name {{data.author.nickname}}
-                      p.subtitle.is-6 {{calcDate (data.created_date)}}
-                    button.delete(@click="deletePost(data.pk)")
-                  //- 글 (최상위)
-                  .content {{data.content}}
-                  //- 이미지 - 1개일 때
-                  .content
-                    figure.image
-                      img(:src='data.image')
-              .columns
-                .column
-                  nav.pagination.is-centered
-                    button.pagination-previous.pagination-btn(@click="prevPage()" :disabled='pagination.prev === null') 이전 페이지
-                    button.pagination-next.pagination-btn(@click="nextPage()" :disabled='pagination.next === null') 다음 페이지                        
+              //- 컨텐츠가 들어간 글
+              div.feed-box
+                .card(v-for = "data in data_list")
+                  header.card-header
+                    a.card-header-title.group-name(@click.prevent ="goGroup(data.group.pk)") 
+                      | &nbsp;  
+                      | &nbsp;  
+                      span.icon.icon-bond
+                        img(src="../../assets/btn-bond-normal.svg")
+                      | &nbsp;  
+                      | {{data.group.name}}
+                  .card-content
+                    article.media
+                      .media-left
+                        figure.image.is-64x64.img-user-64
+                          img.img-user-profile(:src='data.author.profile_img', alt='Image')
+                      .media-content
+                        p.title.is-4.user-name {{data.author.nickname}}
+                        p.subtitle.is-6 {{calcDate (data.created_date)}}
+                      button.delete(@click="deletePost(data.pk)")
+                    //- 글 (최상위)
+                    .content {{data.content}}
+                    //- 이미지 - 1개일 때
+                    .content
+                      figure.image
+                        img(:src='data.image')
+            .columns
+              .column
+                nav.pagination.is-centered
+                  button.pagination-previous.pagination-btn(@click="prevPage()" :disabled='pagination.prev === null') 이전 페이지
+                  button.pagination-next.pagination-btn(@click="nextPage()" :disabled='pagination.next === null') 다음 페이지                        
 
       main-footer
       MakingGroupModal(ref="my_modal" close_message="close lightbox")
@@ -251,11 +252,15 @@ body
 .card
   margin-bottom: 20px
 
-.card
-  margin-bottom: 20px
+.feed-box-wrapper
+  min-height: 80vh
 
 .dropdownhr
   margin: 5px
+.group-img-small-wrapper
+  width: 32px
+  height: 32px
+  overflow: hidden
 
 .group-img-small
   border-radius: 10%
@@ -269,6 +274,15 @@ body
 
 .group-name
   color: $primary
+
+.img-user-64
+  background: #eee
+  width: 64px
+  height: 64px
+  overflow: hidden
+  border-radius: 50%
+
+.img-user-profil
 
 .btn-show-comment,
 .btn-show-like
