@@ -174,4 +174,8 @@ export default {
   white-space: nowrap
   overflow: hidden
   text-overflow: ellipsis
+
+.pagination
+  // position: absolute
+  // bottom: 0
 </style>

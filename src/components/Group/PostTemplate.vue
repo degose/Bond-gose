@@ -205,6 +205,7 @@ export default {
         }).catch(function (error) {
         console.error(error.message);
       });
+      this.write_comment = '';
     },
     fetchCommentData(post_pk){
       let user_token = window.localStorage.getItem('token');

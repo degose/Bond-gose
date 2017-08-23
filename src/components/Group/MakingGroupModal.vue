@@ -3,7 +3,7 @@
     .modal-background(@click="closeModal")
     .modal-card
       header.modal-card-head
-        figure.image.is-desktop-16by9.is-mobile-1by1.is-tablet-2by1.img-group-wrapper
+        figure.image.is-desktop-16by9.is-mobile-1by1.is-tablet-2by1.img-group-wrapper.is-hidden-mobile
           img(v-if="group.profile_img" :src="uploadGroupImg", alt='그룹 대표 사진')
       //- section.modal-card-body.is-hidden-mobile
       //-   .file.has-name.is-fullwidth.is-primary
@@ -79,6 +79,11 @@ export default {
   },
   methods: {
     closeModal(){
+      this.group.name = '';
+      this.group.description = '';
+      this.$refs.file_input = null;
+      this.uploadGroupImg = '';
+      this.file_name = '';
       this.visible = false;
     },
     checkImage(file){
@@ -101,7 +106,7 @@ export default {
           _this.file_url = reader.result;
         }
       } else { alert('이미지 파일만 선택 가능합니다.')}
-      console.log('file:',file);
+      // console.log('file:',file);
     },
     createGroup(){
 
@@ -134,7 +139,8 @@ export default {
         // console.log('data',data);
         // console.log('response',response);
         if(this.$parent.group_list.length >= 11){
-          this.$parent.group_list.splice(0,1,{
+          this.$parent.group_list.splice(10,1);
+          this.$parent.group_list.unshift({
             description: description,
             group_type: 'PUBLIC',
             name: name,
@@ -158,9 +164,15 @@ export default {
           });
         }
         // console.log(profile_img);
+        this.group.name = '';
+        this.group.description = '';
+        this.$refs.file_input = null;
+        this.uploadGroupImg = '';
+        this.file_name = '';
+
         this.visible = false;
         // getMyGroupList();
-        console.log('부모', this.$parent);
+        // console.log('부모', this.$parent);
       })
       .catch(error => {
         if(this.group.name === ''){

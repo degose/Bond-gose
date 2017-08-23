@@ -80,6 +80,10 @@ export default {
   },
   methods: {
     closeModal(){
+      this.uploadImg = '';
+      this.$refs.file_img_input = '';
+      this.write.content = '';
+      this.visible = false;
       this.visible = false;
     },
     checkImage(file){
@@ -162,7 +166,10 @@ export default {
                   // });
                 })
                 .catch(error => console.log(error.response));
-                this.visible = false;
+      this.uploadImg = '';
+      this.$refs.file_img_input = '';
+      this.write.content = '';
+      this.visible = false;
     },
     // 한글 양방향 데이터 바인딩 메서드
     writePost(target, e){

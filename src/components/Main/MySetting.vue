@@ -79,6 +79,8 @@ export default {
   },
   methods: {
     closeModal(){
+      this.userinput = '';
+      this.$refs.file_input = '';
       this.visible = false;
     },
     checkImage(file){
@@ -134,14 +136,18 @@ export default {
         let profile_img = data.profile_img;
         this.$parent.user = data;
         this.visible = false;
-
+        
       })
       .catch(error => {
         if(this.userinput.nickname === ''){
           alert('닉네임 <- ' + error.response.data.nickname[0])
         }
         else alert("음... 알 수 없네요.. 무슨일이죠?")
-        console.error(error.response)});
+        console.error(error.response)
+      });
+      this.userinput = '';
+      this.$refs.file_input = '';
+
     },
     getUserInfo(){
       let user_token = window.localStorage.getItem('token');
