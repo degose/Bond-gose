@@ -12,7 +12,19 @@
               .media-content
                 p.title.is-4 {{ group_data.name }}
                 div
-                  span 멤버 {{ group_data.num_of_members }}
+                  strong 멤버 
+                  //- | &nbsp;
+                  | ·
+                  | &nbsp;
+                  span {{ group_data.num_of_members }}
+                  //- | &nbsp;
+                  //- | &nbsp;
+                div
+                  strong 그룹장 
+                  //- | &nbsp;
+                  | ·
+                  | &nbsp;
+                  span {{ group_data.owner.nickname }}
             .content {{ group_data.description }}
 
       .column.is-9
@@ -94,6 +106,7 @@ export default {
        { headers: {'Authorization' : `Token ${user_token}`}}
        )
                 .then(response=> {
+                  // console.log('data',response.data)
                   this.group_data = response.data;
                   this.is_owner.push(response.data.owner)
                 })
@@ -172,7 +185,8 @@ body
   border-radius: 50%
 
 .img-user-profile
-  height: 100%
+  min-height: 100%
+  width: 100%
 
 .namelist,
   padding-top: 13px

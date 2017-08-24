@@ -50,7 +50,7 @@
                   .card-content
                     article.media
                       .media-left
-                        figure.image.is-64x64.img-user-64
+                        figure.image.is-64x64.img-user-64.is-1by1
                           img.img-user-profile(:src='data.author.profile_img', alt='Image')
                       .media-content
                         p.title.is-4.user-name {{data.author.nickname}}
@@ -231,9 +231,11 @@ export default {
   width: 32px
   height: 32px
   overflow: hidden
+  border-radius: 10%
 
 .group-img-small
-  border-radius: 10%
+  width: 100%
+  min-height: 100%
 
 .group-small-list-group
   line-height: 38px
@@ -253,6 +255,7 @@ export default {
   border-radius: 50%
 
 .img-user-profile
+  width: 100%
   height: 100%
 
 .btn-show-comment,

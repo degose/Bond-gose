@@ -13,17 +13,26 @@
                   .media-content
                     p.title.is-4 {{ group_data.name }}
                     div
-                      span 멤버 {{ group_data.num_of_members }}
-                      | &nbsp; ·&nbsp; 
-                      a(aria-label="open delete group modal" @click.prevent="openDeleteGroupModal" v-if= "is_owner") 
-                        span.icon.is-small
-                          i.fa.fa-cog(aria-hidden='true') 
-                        | 그룹 삭제
-                      a(aria-label="open leave group modal" @click.prevent="openLeaveGroupModal" v-if= "!is_owner") 
-                        span.icon.is-small
-                          i.fa.fa-cog(aria-hidden='true') 
-                        | 그룹 탈퇴
-                .content {{ group_data.description }}
+                      strong 멤버 
+                      | ·
+                      | &nbsp;
+                      span {{ group_data.num_of_members }}
+                    //- div
+                    //-   strong 그룹장 
+                    //-   //- | &nbsp;
+                    //-   | ·
+                    //-   | &nbsp;
+                    //-   span {{ group_data.owner.nickname }}
+                .content 
+                  p {{ group_data.description }}
+                  a(aria-label="open delete group modal" @click.prevent="openDeleteGroupModal" v-if= "is_owner") 
+                    span.icon.is-small
+                      i.fa.fa-cog(aria-hidden='true') 
+                    | 그룹 삭제
+                  a(aria-label="open leave group modal" @click.prevent="openLeaveGroupModal" v-if= "!is_owner") 
+                    span.icon.is-small
+                      i.fa.fa-cog(aria-hidden='true') 
+                    | 그룹 탈퇴
                   
                   
           //- feed 영역

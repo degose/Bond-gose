@@ -53,7 +53,7 @@
                   .card-content
                     article.media
                       .media-left
-                        figure.image.is-64x64.img-user-64
+                        figure.image.is-64x64.img-user-64.is-1by1
                           img.img-user-profile(:src='data.author.profile_img', alt='Image')
                       .media-content
                         p.title.is-4.user-name {{data.author.nickname}}
@@ -93,9 +93,9 @@ export default {
   //   this.fetchPostData();
     // this.deletePost();
   // },
-  watch: {
-    deletePost(){}
-  },
+  // watch: {
+  //   deletePost(){}
+  // },
   data() {
     return {
       dropdownpost: false,
@@ -125,24 +125,33 @@ export default {
     openModal(){
       this.$refs.my_modal.visible = true;
     },
-    deletePost(pk, i){
-      // console.log('pkstpk::',pk);
-      // console.log('i', this.post_data[i]);
-      // let post_num = this.post_data[i];
-      // post_num.splice(0,1);
-      // this.post_data.post[i].splice(i, 1);
-      console.log('i',this.post_data);
-      // console.log('i',post_num);
+    deletePost(pk){
       let user_token = window.localStorage.getItem('token');
-      this.$http.delete('https://api.thekym.com/post/' + `${pk}`+ '/',
-       { headers: {'Authorization' : `Token ${user_token}`}})
-                .then(response=> {
-                  // post_num.splice(0,1);
-                  // console.log('i',this.post_data);
-                  // console.log('i',post_num);
-                  this.post_data.post[i].splice(i, 1);
-                })
-                .catch(error => console.log(error.response));
+      let user_nickname = window.localStorage.getItem('user_nickname');
+      let confirmPostDelete = confirm(`${user_nickname}` + '님, 정말 이 글을 삭제하시겠습니까?');
+      if ( confirmPostDelete === true ){
+        this.$http.delete('https://api.thekym.com/post/' + `${pk}`+ '/',
+          { headers: {'Authorization' : `Token ${user_token}`}})
+          .then(response=> {
+            let group_pk = window.localStorage.getItem('this_group');
+            this.$http.get('https://api.thekym.com/post/?group=' + `${group_pk}`,
+              { headers: {'Authorization' : `Token ${user_token}`} })
+              .then(response=> {
+                let data = response.data.results;
+                let post_data = []
+                data.forEach(item => {
+                  post_data.push(item);
+                });
+                this.data_list = post_data;
+              })
+          })
+          .catch(error => {
+            if (error.response.status === 403){
+              alert('작성자만 요청할 수 있는 작업입니다.');
+            }
+            console.log(error.response);
+          });
+      }
     },
     getMyGroupList(){
         let user_token = window.localStorage.getItem('token');
@@ -199,26 +208,6 @@ export default {
          this.openMywrite('prev');
       }
     },
-    deletePost(pk){
-      // this.$refs.delete_post_modal.visible = true;
-      // window.localStorage.getItem(pk);
-      console.log('pkstpk::',pk);
-      // console.log('i', this.post_data[i]);
-      // let post_num = this.post_data[i];
-      // post_num.splice(0,1);
-      // this.post_data.post[i].splice(i, 1);
-      // console.log('i',post_num);
-      let user_token = window.localStorage.getItem('token');
-      this.$http.delete('https://api.thekym.com/post/' + `${pk}`+ '/',
-       { headers: {'Authorization' : `Token ${user_token}`}})
-                .then(response=> {
-                  // post_num.splice(0,1);
-                  // console.log('i',this.post_data);
-                  // console.log('i',post_num);
-                  // this.post_data.post[i].splice(i, 1);
-                })
-                .catch(error => console.log(error.response));
-    },
     goGroup(pk){
       window.localStorage.setItem('this_group', pk);
       this.$router.push({ path: '/JointGroup/', query: { group: `${pk}` }});
@@ -261,9 +250,11 @@ body
   width: 32px
   height: 32px
   overflow: hidden
+  border-radius: 10%
 
 .group-img-small
-  border-radius: 10%
+  width: 100%
+  min-height: 100%
 
 .group-small-list-group
   line-height: 38px
@@ -282,7 +273,9 @@ body
   overflow: hidden
   border-radius: 50%
 
-.img-user-profil
+.img-user-profile
+  width: 100%
+  height: 100%
 
 .btn-show-comment,
 .btn-show-like

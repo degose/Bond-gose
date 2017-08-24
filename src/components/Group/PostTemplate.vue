@@ -4,7 +4,7 @@
                   .card-content
                     article.media
                       .media-left
-                        figure.image.is-64x64.img-user
+                        figure.image.is-64x64.is-1by1.img-user
                           img.img-user-profile(:src='post.author.profile_img', alt='Image')
                       .media-content
                         p.title.is-4.user-name {{ post.author.nickname }}
@@ -70,7 +70,7 @@
                     //- 댓글 리스트 영역
                     article.media(v-for="comment in comment_data" v-show="showcomment")
                       figure.media-left
-                        p.image.is-48x48.img-user-48
+                        p.image.is-48x48.img-user-48.is-1by1
                           img.img-user-profile(:src='comment.author.profile_img')
                       .media-content
                         .content
@@ -89,8 +89,6 @@
 <script>
 export default {
   created(){
-  },
-  watch: {
   },
   props:['post'],
   data() {
@@ -255,7 +253,7 @@ export default {
 
 .img-user-profile
   height: 100%
-  // width: 100%
+  width: 100%
 
 .user-img
   background: #eee
