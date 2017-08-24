@@ -2,6 +2,11 @@
   div(v-cloak)
     .container
       header.header
+      transition(
+            appear
+            enter-active-class="animated rubberBand"
+            :duration="2000"
+          )
         .columns.is-centered.is-mobile
           .column.is-half.is-narrow.has-text-centered.logo
             router-link(to='/')
@@ -23,7 +28,7 @@
                       i.fa.fa-check
                 .column.is-half.is-offset-one-quarter
                   .control.has-icons-left.has-icons-right
-                    input.input(type='password', v-model="signin.password" placeholder='비밀번호를 입력해주세요.', aria-label="비밀번호 입력상자")
+                    input.input(type='password', v-model="signin.password" placeholder='비밀번호를 입력해주세요.', aria-label="비밀번호 입력상자" @keyup.enter="signinSubmit")
                     span.icon.is-small.is-left
                       i.fa.fa-lock
                     span.icon.is-small.is-right
