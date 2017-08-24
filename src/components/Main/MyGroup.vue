@@ -6,7 +6,6 @@
           
           //- 그룹 정보 영역
           .column.is-3(v-for="group in group_list")
-            //- router-link(to="/JointGroup")
             a(@click.prevent="goGroup(group.pk, $event)")
               .card
                 .card-image
@@ -23,7 +22,6 @@
               a(@click="openModal")
                 .card-image.makegroup
                   figure.image.is-desktop-16by9.is-mobile-1by1.is-tablet-2by1.img-grouplist-wrapper.is-hidden-mobile
-                      //- img(src='../../assets/group-add-hoverx2-mobile.png', alt='Image').is-hidden-desktop.is-hidden-tablet
                       img(src='../../assets/group-add-hoverx2-tablet.png', alt='Image').is-hidden-tablet.is-hidden-mobile
                       img(src='../../assets/group-add-hoverx2.png', alt='Image').is-hidden-mobile
                 .card-content
@@ -71,6 +69,8 @@ export default {
       this.$refs.my_modal.visible = true;
     },
     getMyGroupList(direction){
+      const loadingComponent = this.$loading.open()
+      setTimeout(() => loadingComponent.close(), 1 * 1000)
       let user_token = window.localStorage.getItem('token');
       let path = null;
       let page_num = 1;
@@ -98,13 +98,13 @@ export default {
         console.log(error.message);
       })
     },
-    // "http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/my-group/?page=2".slice(73)  => "2"
+    // "https://api.thekym.com/group/my-group/?page=2".slice(73)  => "2"
     nextPage(){
       let api_path = this.pagination.next;
       if (api_path !== null) {
       // let first = api_path.indexOf('?page=');
       // let last = api_path.indexOf('&');
-      let page_path = api_path.slice(36);
+      let page_path = api_path.slice(-1);
       this.page_num = page_path
       this.getMyGroupList('next');
       // console.log('작동된다')
@@ -114,11 +114,11 @@ export default {
       let api_path = this.pagination.prev;
       // let last = api_path.indexOf('&');
       // let first = api_path.indexOf('?page=');
-      let page_path = api_path.slice(36);
+      let page_path = api_path.slice(-1);
       this.page_num = page_path
 
       if(this.page_num >= 3){
-      let page_path = api_path.slice(36);
+      let page_path = api_path.slice(-1);
       this.page_num = page_path;
       this.getMyGroupList('prev');}
       else{
@@ -127,16 +127,9 @@ export default {
       }
     },    
     goGroup(pk, e){
-      // this.$router.push({ path: 'JointGroup', query: { plan: 'private' }});
-      // http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/my-group/?group=1
-      // let group_pk = 'http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/' + `${pk}`;
-      // this.$router.push('/JointGroup/?group=${}');
-      // this.$router.push({path: '/JointGroup', params: {id: pk}});
       this.$router.push({ path: '/JointGroup/'});
       // this.$router.push({ path: '/JointGroup/', query: { group: `${pk}` }});
       window.localStorage.setItem('this_group',pk);
-      // this.$http.get('http://bond.ap-northeast-2.elasticbeanstalk.com/api/group/')
-      // console.log(pk);
     }
 }}
 </script>
@@ -165,6 +158,7 @@ export default {
   overflow: hidden
   // background: #eee
 .grouplist-wrapper
+  min-height: 80vh
   flex-wrap: wrap
 
 .ellipsis-wrapper
@@ -174,4 +168,8 @@ export default {
   white-space: nowrap
   overflow: hidden
   text-overflow: ellipsis
+
+.pagination
+  // position: absolute
+  // bottom: 0
 </style>

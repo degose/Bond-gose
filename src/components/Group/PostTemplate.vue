@@ -1,41 +1,24 @@
 <template lang="pug">
               div()
-                .card()
+                .card
                   .card-content
                     article.media
                       .media-left
-                        figure.image.is-64x64.img-user
-                          img.user-img(:src='post.author.profile_img', alt='Image')
+                        figure.image.is-64x64.is-1by1.img-user
+                          img.img-user-profile(:src='post.author.profile_img', alt='Image')
                       .media-content
                         p.title.is-4.user-name {{ post.author.nickname }}
-                        p.subtitle.is-6 {{ post.created_date }}
+                        p.subtitle.is-6 {{ calcDate (post.created_date) }}
                       //- post삭제
-                      //- button.delete(@click="openDeletePostModal(post.pk)")
                       button.delete(@click="deletePost(post.pk)")
 
 
 
-                      //- 드롭다운 버튼
-                      //- .dropdown.is-right.is-active
-                        .dropdown-trigger
-                          button(aria-haspopup='true', aria-controls='dropdown-menu3' @click="openDropdownPost($event)")
-                            span.icon
-                              i.icon-more.ion-android-more-vertical(aria-hidden='true')
-
-                        //- #dropdown-menu3.dropdown-menu(role='menu' :class="post.pk")
-                        #dropdown-menu3.dropdown-menu(role='menu' v-show="dropdownpost" :class='post.pk' ref="dropdownpostref")
-                          .dropdown-content
-                            ul
-                              li
-                                a.dropdown-item(href='#')
-                                  | 글 수정
-                              li
-                                a.dropdown-item(href='#')
-                                  | 글 삭제
 
                     //- 글 (최상위)
                     .content
-                      | {{ post.content }}
+                      p(style='white-space: pre-line') 
+                        | {{ post.content }}
 
                       
                     //- 이미지
@@ -44,29 +27,6 @@
                         img(:src='post.image')
 
 
-                    //- 동영상
-                    //- .content(v-if=' -1 > 0')s
-                      figure
-                        video.responsive-svg(controls='', poster='http://bulma.io/images/placeholders/480x320.png', preload='none', width='640', height='360')
-                          source(src='../../assets/KakaoTalk_2017-08-02-19-43-12_Video_36.mp4', type='video/webm; codecs="vp8, vorbis"')
-                          track(src='', kind='captions', srclang='en', label='English captions', default='')
-
-
-
-                    //- 첨부파일
-                    //- .content(v-if=' -1 > 0')
-                      .file-box
-                        a(href='#')
-                          .columns.is-mobile
-                            .column.is-1
-                              span
-                                i.fa.fa-folder-open-o
-                            .column 
-                              span
-                                p README.md
-                            .column.is-1
-                              span
-                                i.fa.fa-arrow-down
                   
                   
                   //- 좋아요, 댓글 개수
@@ -93,8 +53,6 @@
                         i.fa.fa-angle-down(aria-hidden='true')
                       span.icon.is-small(v-show="showcomment")
                         i.fa.fa-angle-up(aria-hidden='true')
-                        
-
                 //- 댓글 영역
                 .card
                   .card-content
@@ -110,33 +68,29 @@
                             button.btn-comment.btn-default.is-hidden-desktop.is-hidden-tablet(type="button" @click="writeCommentSubmit(post.pk)")
                               span.icon
                                 i.fa.fa-pencil
-                    
                     //- 댓글 리스트 영역
                     article.media(v-for="comment in comment_data" v-show="showcomment")
                       figure.media-left
-                        p.image.is-48x48
-                          img.user-img(:src='comment.author.profile_img')
+                        p.image.is-48x48.img-user-48.is-1by1
+                          img.img-user-profile(:src='comment.author.profile_img')
                       .media-content
                         .content
                           p
                             strong {{ comment.author.nickname }}
                             br
-                            | {{ comment.content }}
+                            p(style='white-space: pre-line')
+                              | {{ comment.content }}
                             br
                             small
-                              | {{ comment.created_date }}
+                              | {{ calcDate (comment.created_date) }}
                       button.delete(@click="deleteComment(comment.pk, post.pk)")
 
 
-
-        
 </template>
 
 <script>
 export default {
   created(){
-  },
-  watch: {
   },
   props:['post'],
   data() {
@@ -148,7 +102,6 @@ export default {
       post_data:[],
       comment_count: null,
       comment_data:[],
-      // pk:'',
       page_num: '',
       pagination:{
         next: '', 
@@ -205,6 +158,7 @@ export default {
         }).catch(function (error) {
         console.error(error.message);
       });
+      this.write_comment = '';
     },
     fetchCommentData(post_pk){
       let user_token = window.localStorage.getItem('token');
@@ -214,16 +168,12 @@ export default {
                 .then(response=> {
                   this.comment_count = response.data.count;
                   this.comment_data = response.data.results;
-                  // console.log('this.comment_data:',this.comment_data);
-                  // console.log('comment::',response);
                   this.showcomment = !this.showcomment;
                 })
                 .catch(error => console.log(error.response));
     },
     addLike(pk) {
       let user_token = window.localStorage.getItem('token');
-      // console.log('pk:',pk);
-      // console.log('token:',user_token);
       this.$http.post('https://api.thekym.com/post/' + `${pk}`+ '/post-like-toggle/', true,
        { headers: {'Authorization' : `Token ${user_token}`}})
           .then(response=> {
@@ -259,9 +209,7 @@ export default {
             .then(response=> {
               this.comment_count = response.data.count;
               this.comment_data = response.data.results;
-              // console.log('comment::',response);
             })
-            // console.log(response);
             })
           .catch(error => {
             if (error.response.status === 403){
@@ -271,6 +219,9 @@ export default {
           });
       }
     },
+    calcDate(content){
+      return content.slice(0,19).split("T").toString().replace(',', ' ').slice(0,-3)
+    }
   }
 }
 </script>
@@ -290,6 +241,25 @@ export default {
 .group_profile_img
   background: url('http://bulma.io/images/placeholders/1280x960.png')
   // overflow: hidden
+
+.img-user
+  background: #eee
+  width: 64px
+  height: 64px
+  overflow: hidden
+  border-radius: 50%
+
+.img-user-48
+  background: #eee
+  width: 48px
+  height: 48px
+  overflow: hidden
+  border-radius: 50%
+
+.img-user-profile
+  height: 100%
+  width: 100%
+
 .user-img
   background: #eee
 

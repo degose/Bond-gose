@@ -36,35 +36,18 @@ export default {
     closeModal(){
       this.visible = false;
     },
-    // deleteMembership(){
-    //   let pk = window.localStorage.getItem('this_group');
-    //   let user_token = window.localStorage.getItem('token');
-    //   console.log(pk);
-    //   console.log(user_token);
-    //   this.$http.post('https://api.thekym.com/member/membership/',
-    //   {group: pk},
-    //   { headers: {'Authorization' : `Token ${user_token}`}})
-    //   .then(response=> {
-    //     console.log(response);
-    //   }).catch(error => console.log(error.response));
-    // },
     deleteMembership(){
       let pk = window.localStorage.getItem('this_group');
       let user_token = window.localStorage.getItem('token');
-      console.log(pk)
-      console.log(user_token)
       this.$http.delete('https://api.thekym.com/member/membership/',
               {group: pk},
-              { headers: {'Authorization' : `Token ${user_token}`}})
+              { headers: {'Authorization' : `Token ${user_token}`}}
+              )
               .then(response => {
-                console.log(response);
-                // this.$router.push({ path: '/MainPage/'});
+                this.$router.push({ path: '/NoneJointGroupFeed/', query: { group: `${pk}` }});
               })
               .catch(error =>{
                 console.error(error.response);
-                // if(error.response.status === 401){
-                // // alert(error.response.data.detail)
-                // }
               })
               this.visible = false;
     }    
