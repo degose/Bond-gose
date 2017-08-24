@@ -52,8 +52,8 @@
                   .card-content
                     article.media
                       .media-left
-                        figure.image.is-64x64.img-user
-                          img.user-img(:src='data.author.profile_img', alt='Image')
+                        figure.image.is-64x64.img-user-64.is-1by1
+                          img.img-user-profile(:src='data.author.profile_img', alt='Image')
                       .media-content
                         p.title.is-4.user-name {{data.author.nickname}}
                         p.subtitle.is-6 {{calcDate (data.created_date)}}

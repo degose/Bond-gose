@@ -123,7 +123,6 @@ export default {
                 .then(response => {
                   let data = response.data;
                   let data_created_date = data.created_date;
-                  console.log('cre_date::',response);
                   this.$parent.post_data.unshift({
                     author: {
                       // email: author.email,
